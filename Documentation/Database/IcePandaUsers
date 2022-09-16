@@ -1,0 +1,20 @@
+Variables in IcePandaUsers documents:
+
+username: The username of the registered user. Not case sensitive. Stored in sessions.
+password: Hash of the user's password.
+email: User's email address.
+registrationDate: Date and time of registration.
+registrationIpaddress: User's ip address at the registration.
+permissions: Permissions of the users in an array. Can contain:
+    "subscriber": Default registered user.
+    "moderator":  Can edit and delete:
+        comments
+        images
+        characters
+        galleries
+        wall posts
+    "watcher":  Can open any restricted zone
+    "administrator": Can edit, delete, add everything the moderators can, plus can edit users.
+characters: Slug names of characters of the user.
+registrationHash: Temporary, used for activation. If exist, user is inactive. It's deleted when user got activated by email.
+lostpasswordkey: Used while changing the lost password. Get's deleted, when new password set.

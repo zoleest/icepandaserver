@@ -1,0 +1,100 @@
+<nav class="navbar navbar-custom navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#"><%= config.websiteName %></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#"><%= language.navbar.frontpage %></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"><%= language.navbar.wall %></a>
+        </li>
+        <% if(isLoggedIn !== undefined){ %>
+            <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <%= language.navbar.characters %>
+                      </a>
+                      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                       <% if (characters.length !== 0){
+
+                           characters.forEach(function(character){
+
+
+                            %>
+
+                            <li>
+
+                                 <a class="dropdown-item <%=activeCharacter.slug === character.character_name_slug?'link-danger':'' %>" href="#" onclick="changeCharacter('<%=character.character_name_slug %>')"><%=character.character_name %></a>
+                            </li>
+
+                            <%
+
+                           });
+
+
+
+                       }%>
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                             <a class="dropdown-item" href="/characters"><%= language.navbar.all %></a>
+                        </li>
+                      </ul>
+                    </li>
+        <%  }else{ %>
+            <li class="nav-item">
+                      <a class="nav-link" href="#"><%= language.navbar.characters %></a>
+             </li>
+         <% } %>
+        <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <%= language.navbar.locations %>
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="/locations"><%= language.navbar.public %></a></li>
+                    <li><a class="dropdown-item" href="/locations?tag=homes"><%= language.navbar.homes %></a></li>
+                    <% if(isLoggedIn !== undefined) { %>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/locations?tag=private"><%= language.navbar.private %></a></li>
+                    <% } %>
+                  </ul>
+                </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <%= language.navbar.informations %>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="#"><%= language.navbar.rules %></a></li>
+            <li><a class="dropdown-item" href="#"><%= language.navbar.faq %></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#"><%= language.navbar.contact %></a></li>
+          </ul>
+        </li>
+
+         <% if(isLoggedIn === undefined) { %>
+
+            <li class="nav-item">
+                   <a class="nav-link link-danger" href="/login"><%= language.navbar.login %></a>
+            </li>
+
+         <% } %>
+          <% if(isLoggedIn !== undefined) { %>
+
+                     <li class="nav-item">
+                            <a class="nav-link" href="/logout"><%= language.navbar.logout %></a>
+                     </li>
+
+                  <% } %>
+      </ul>
+      <form class="d-flex">
+        <input class="form-control me-2" type="search" placeholder="<%= language.navbar.searchPlaceholder %>" aria-label="Search">
+        <button class="btn btn-success" type="submit"><%= language.navbar.search %></button>
+      </form>
+    </div>
+  </div>
+</nav>

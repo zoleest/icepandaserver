@@ -1,0 +1,28 @@
+Login module contains contains one part, the login process.
+
+Registration files:
+login.js - module process
+login_error.ejs - error page
+login_form.ejs - login form
+login_success_character_choice.ejs - login registration page
+
+
+Workflow of Login:
+
+domain/login support both GET and POST method. Both of them checks if the user is already logged in first, and if it's ture,
+then redirects to the index, to avoid multiple login attempts. When it's GET it renders the login form, when it POST it starts the login process.
+login process has one steps: logging user to the actual session
+
+Login process receives two variable from POST:
+username : username for authentication
+password : password for authentication
+
+First it check the username with regex, after that it's look into the database for the user.
+With findOne searches for the submitted username, which do NOT have a registrationhash(because if it has, then it's not active yet), in result it recieves passwordhash, and permissions of the users.
+After that, bcrypt check if the password is correct. If it is, it adds the following variables into the session:
+loggedIn : if exist, then the user is logged in
+username : username of the user, which we will use for queries.
+userPermissions: the permissions the user has for the game.
+
+When finished, it transfers to the login_success_character_choice.
+

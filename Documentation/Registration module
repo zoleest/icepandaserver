@@ -1,0 +1,52 @@
+Registration module contains two separate parts: Registration and Activation.
+
+Registration files:
+registration.js - module process
+registration_error.ejs - error page
+registration_form.ejs - registration form
+registration_success.ejs - completed registration page
+activation-email.js - email template
+
+Workflow of Registration:
+
+domain/registration support both GET and POST method. Both of them checks if the user is already logged in first, and if it's ture,
+then redirects to the index, to avoid multiple login attempts. When it's GET it renders the registration form, when it POST it starts the registration process.
+Registration process has two steps: Validating data, inserting the data and sending the activation mail.
+
+In registration.js "validateRegistration" function makes the validation of the POST data, with regexp tests.
+After that "processRegistration" function check if username or email already exist, and if not, insert the new users data, and following that sending an activation e-mail using the templates.
+
+validateRegistration expect four variables:
+username - The desired username from the request body.
+password - The desired password from the request body.
+confirmation - The confirmation of the password from the request body.
+email - The desired e-mail address from the request body.
+
+If some of them is not valid - or the password and it's confirmation not match - the function returns error which will make the main function render error pages.
+Error codes:
+err1: username is not valid. - can contain only alphanumeric characters, and it's length must be between 3 and 32 characters.
+err2: password is not valid. - must be longer than 8 characters.
+err3: password and confirmation doesn't match.
+err4: e-mail is not valid.
+
+processRegistration expect six variables:
+res - Result of router function to let the function render pages.
+mongoCollection - The previously connected mongoDBCollection object.
+username - The desired username from the request body.
+password - The desired password from the request body.
+email - The desired e-mail address from the request body.
+ipaddress - The request's socket's remote address.
+
+processRegistration inserts new document to MongoDB's IcePandaUsers collection, with the following data:
+userName - The processed username.
+password - The bcrypt hash of password.
+email - The email address.
+registrationDate - The date and time of the registration.
+registrationIpAddress - The ip which the registration started from.
+permissions - The users permissions. It sets for subscriber for default.
+registrationHash - Hash of username + email.
+
+activation.js only contain it's main function, including a MongoDB connection. If there is a key of any documentum in the collection, it removes it, which activates the new user.
+
+Used variables in the findOne() function:
+activationKey - the key the function search, and gets value of request's query.

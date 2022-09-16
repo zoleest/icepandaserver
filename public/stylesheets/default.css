@@ -1,0 +1,19 @@
+
+
+body{
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    background-image: url("/images/background.webp");
+    height: 100vh;
+
+}
+
+html, body{
+    overflow-x: hidden;
+}
+
+.frontpage-main{
+    height: fit-content;
+}

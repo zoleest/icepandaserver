@@ -1,0 +1,18 @@
+{
+  "character_id": 0,
+  "character_name": name,
+  "character_nicknames": nickname,
+  "character_birthday_date": brithday,
+  "character_species": species,
+  "character_gender": gender,
+  "character_sex": sex,
+  "character_weapons:": weapons,
+  "character_abilities": abilities,
+  "relationships": [],
+  "properties":[],
+  "story": story,
+  "interests": interests,
+  "game_style": game_style,
+  "avatar_base": profile_picture_base;
+
+}

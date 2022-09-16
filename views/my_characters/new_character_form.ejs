@@ -1,0 +1,48 @@
+<link rel="stylesheet" href="/stylesheets/croppie.css" />
+<script src="/javascripts/croppie.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.ckeditor.com/4.17.1/standard/ckeditor.js"></script>
+<script src="/javascripts/character_edit.js"></script>
+
+<link rel="stylesheet" href="/stylesheets/character_edit.css">
+
+
+<form method="POST" id="new_character_form">
+    Név:<input name="name" required><br>
+    Becenevek:<input name="nickname" required><br>
+    Születésnap<input name="birthday" required><br>
+    Faj:<input name="species" required><br>
+    Szexualitás:<input name="gender" required><br>
+    Nem:<input name="sex" required><br>
+
+
+    <div id="croppie-container">
+
+       <img id="profile_picture_image">
+    </div>
+    <button id="use" type="button">asd</button>
+    <button type="button" id="change_image" style="display:none">Másik kép válaszása</button>
+    Profilkép: <input type="file" id="profile_picture_file" >
+    <input type="hidden" name ="profile_picture" id="profile_picture">
+
+    Fegyverek:<input name="weapon_name"><textarea name="weapon_description"></textarea><br>
+    <input name="weapon_name"><textarea name="weapon_description"></textarea><br>
+    <input name="weapon_name"><textarea name="weapon_description"></textarea><br>
+    <input name="weapon_name"><textarea name="weapon_description"></textarea><br>
+    <input name="weapon_name"><textarea name="weapon_description"></textarea><br>
+    <input name="weapon_name"><textarea name="weapon_description"></textarea><br><br><br>
+
+    Képességek: <input name="ability_name"><textarea name="ability_description"></textarea><br>
+    <input name="ability_name"><textarea name="ability_description"></textarea><br>
+    <input name="ability_name"><textarea name="ability_description"></textarea><br>
+    <input name="ability_name"><textarea name="ability_description"></textarea><br>
+    <input name="ability_name"><textarea name="ability_description"></textarea><br>
+    <input name="ability_name"><textarea name="ability_description"></textarea><br><br><br>
+
+    Történet: <textarea name="story"></textarea><br>
+    Érdeklődés: <textarea name="interests"></textarea><br>
+    <input name="game_style">
+
+    <input type="submit" id="submit_button">
+</form>
