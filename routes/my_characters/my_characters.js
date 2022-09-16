@@ -68,6 +68,8 @@ router.post('/', async function (req, res) {
 
             const slug = sanitize(req.body.character);
 
+            console.log(slug);
+
 
             //checks if character is in the session
             let isPlayersCharacter = false;

@@ -9,8 +9,8 @@ const sanitize = require("mongo-sanitize")
 const MongoClient = new Mongo.MongoClient(config.mongoUrl);
 MongoClient.connect();
 const MongoDBCollection = {
-    "pages": MongoClient.db(config.databaseName).collection(config.databaseName+"Pages"),
-    "comments": MongoClient.db(config.databaseName).collection(config.databaseName+"Comments")
+    "pages": MongoClient.db(config.databaseName).collection(config.databaseName + "Pages"),
+    "comments": MongoClient.db(config.databaseName).collection(config.databaseName + "Comments")
 };
 
 /* GET users listing. */
@@ -36,12 +36,18 @@ router.get('/', async function (req, res, next) {
                 let commentPage = (req.query.pg !== undefined && !isNaN(req.pg)) ? sanitize(req.query.pg) : 1;
 
                 //get comments from database
-                commentsJson = await MongoDBCollection.comments.find({"comment_page": pageSlug}).sort({"comment_date": -1}).skip((commentPage - 1) * config.commentPageLimit).limit(config.commentPageLimit).toArray();
+                commentsJson = await MongoDBCollection.comments.find({
+                    "comment_page": pageSlug,
+                    "comment_allowed": true
+                }).sort({"comment_date": -1}).skip((commentPage - 1) * config.commentPageLimit).limit(config.commentPageLimit).toArray();
 
 
                 if (commentsJson.length === 0) {
 
-                    commentsJson = await MongoDBCollection.comments.find({"comment_page": pageSlug}).sort({"comment_date": -1}).limit(config.commentPageLimit).toArray();
+                    commentsJson = await MongoDBCollection.comments.find({
+                        "comment_page": pageSlug,
+                        "comment_allowed": true
+                    }).sort({"comment_date": -1}).limit(config.commentPageLimit).toArray();
 
 
                 }
@@ -57,6 +63,8 @@ router.get('/', async function (req, res, next) {
                 "isLoggedIn": req.session.loggedIn,
                 "characters": req.session.userCharacters,
                 "activeCharacter": req.session.activeCharacter,
+                "permissions": req.session.userPermissions,
+                "level": req.session.level,
                 "titlePartial": pageJson.page_name,
                 "urlPartial": '/page?id=' + req.query.id,
                 "CKEPosition": 'comment'

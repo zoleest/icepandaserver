@@ -9,8 +9,8 @@ const sanitize = require("mongo-sanitize")
 const MongoClient = new Mongo.MongoClient(config.mongoUrl);
 MongoClient.connect();
 const MongoDBCollection = {
-    "locations": MongoClient.db(config.databaseName).collection(config.databaseName+"Locations"),
-    "comments": MongoClient.db(config.databaseName).collection(config.databaseName+"Comments")
+    "locations": MongoClient.db(config.databaseName).collection(config.databaseName + "Locations"),
+    "comments": MongoClient.db(config.databaseName).collection(config.databaseName + "Comments")
 };
 
 /* GET users listing. */
@@ -20,6 +20,10 @@ router.get('/', async function (req, res, next) {
     let tag = sanitize(req.query.tag);
     //get your slug to search for restricted locations
     let restrictedTo = req.session.activeCharacter !== undefined ? req.session.activeCharacter.slug : "";
+
+    //get comment page number
+    let commentPage = (req.query.pg !== undefined && !isNaN(req.pg)) ? sanitize(req.query.pg) : 1;
+
 
     if (req.query.id !== undefined) {
         //get and sanitize the slug from query
@@ -31,9 +35,6 @@ router.get('/', async function (req, res, next) {
         //if location exist check for comments
         if (locationJson !== null) {
 
-
-            //get comment page number
-            let commentPage = (req.query.pg !== undefined && !isNaN(req.pg)) ? sanitize(req.query.pg) : 1;
 
             //get comments from database
             let commentsJson = await MongoDBCollection.comments.find({"comment_location": locationSlug}).sort({"comment_date": -1}).skip((commentPage - 1) * config.commentPageLimit).limit(config.commentPageLimit).toArray();
@@ -61,6 +62,8 @@ router.get('/', async function (req, res, next) {
                         "characters": req.session.userCharacters,
                         "activeCharacter": req.session.activeCharacter,
                         "titlePartial": locationJson.location_name,
+                        "permissions": req.session.userPermissions,
+                        "level": req.session.level,
                         "urlPartial": '/location?id=' + req.query.id,
                         "CKEPosition": 'comment'
                     });
@@ -80,6 +83,8 @@ router.get('/', async function (req, res, next) {
                             "characters": req.session.userCharacters,
                             "activeCharacter": req.session.activeCharacter,
                             "titlePartial": locationJson.location_name,
+                            "permissions": req.session.userPermissions,
+                            "level": req.session.level,
                             "urlPartial": '/location?id=' + req.query.id,
                             "CKEPosition": 'none'
                         });
@@ -124,6 +129,8 @@ router.get('/', async function (req, res, next) {
                     "isLoggedIn": req.session.loggedIn,
                     "characters": req.session.userCharacters,
                     "activeCharacter": req.session.activeCharacter,
+                    "permissions": req.session.userPermissions,
+                    "level": req.session.level,
                     "titlePartial": language.locations.locations,
                     "urlPartial": '/location'
                 });
@@ -148,7 +155,7 @@ router.get('/', async function (req, res, next) {
         let locationsMenuJson = await MongoDBCollection.locations.find({
             "location_restricted_to": restrictedTo,
             "location_type": tag
-        }).sort({"location_name": 1}).skip((page - 1) * config.locationsPageLimit).limit(config.locationsPageLimit).toArray();
+        }).sort({"location_name": 1}).skip((commentPage - 1) * config.locationsPageLimit).limit(config.locationsPageLimit).toArray();
 
         if (locationsMenuJson.length === 0) {
 
@@ -167,6 +174,8 @@ router.get('/', async function (req, res, next) {
                 "isLoggedIn": req.session.loggedIn,
                 "characters": req.session.userCharacters,
                 "activeCharacter": req.session.activeCharacter,
+                "permissions": req.session.userPermissions,
+                "level": req.session.level,
                 "titlePartial": language.locations.locations,
                 "urlPartial": '/location'
             });

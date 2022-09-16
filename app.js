@@ -42,6 +42,8 @@ const recentPageCommentsRouter = require('./routes/recent_comments/recent_page_c
 
 //Pages
 const pagesRouter = require('./routes/pages/pages');
+const notificationsRouter = require('./routes/admin/notifications');
+
 
 const app = express();
 
@@ -107,6 +109,10 @@ app.use('/recent-page-comments', recentPageCommentsRouter);
 
 //Pages
 app.use('/pages', pagesRouter);
+
+//admin
+//Notifications
+app.use('/admin-notifications', notificationsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -9,7 +9,7 @@ MongoClient.connect();
 const MongoDBCollection = {
     "locations": MongoClient.db(config.databaseName).collection(config.databaseName + "Locations"),
     "comments": MongoClient.db(config.databaseName).collection(config.databaseName + "Comments"),
-    "characters": MongoClient.db("config.databaseName").collection(config.databaseName + "Characters"),
+    "characters": MongoClient.db(config.databaseName).collection(config.databaseName + "Characters"),
     "pages": MongoClient.db(config.databaseName).collection(config.databaseName + "Pages")
 };
 

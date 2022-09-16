@@ -12,8 +12,8 @@ const sharp = require('sharp');
 const MongoClient = new Mongo.MongoClient(config.mongoUrl);
 MongoClient.connect();
 const MongoDBCollections = {
-    'users': MongoClient.db(config.databaseName).collection(config.databaseName+"Users"),
-    'characters': MongoClient.db(config.databaseName).collection(config.databaseName+"Characters")
+    'users': MongoClient.db(config.databaseName).collection(config.databaseName + "Users"),
+    'characters': MongoClient.db(config.databaseName).collection(config.databaseName + "Characters")
 };
 
 
@@ -151,7 +151,7 @@ router.post('/', async function (req, res) {
 
 
                 //insert to database
-                MongoDBCollections.characters.insertOne({
+                let inserted = await MongoDBCollections.characters.insertOne({
                     "character_id": maxIdFromDatabase[0].character_id + 1,
                     "character_name": name,
                     "character_nicknames": nickname,
@@ -172,15 +172,17 @@ router.post('/', async function (req, res) {
                     "character_user_username": req.session.userName
 
 
-                }).then(function (result) {
-
-                    MongoDBCollections.users.updateOne({"username": req.session.userName}, {$push: {"characters": slug}}).then(function (result) {
-
-                        req.session.userCharacters.push('slug');
-
-                    });
-
                 });
+
+                if (inserted !== null) {
+
+                    MongoDBCollections.users.updateOne({"username": req.session.userName}, {$push: {"characters": slug}});
+
+                    req.session.userCharacters.push({"character_name": name, "character_name_slug": slug});
+                    req.session.activeCharacter = {"name": name, "slug": slug};
+
+
+                }
 
 
                 res.writeHead(302, {

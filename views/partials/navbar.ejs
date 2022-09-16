@@ -38,11 +38,25 @@
 
 
                        }%>
+                        <% if(characters.length > 0){
 
-                        <li><hr class="dropdown-divider"></li>
+                        %>
+                            <li><hr class="dropdown-divider"></li>
+                        <%
+
+                        }%>
+
                         <li>
                              <a class="dropdown-item" href="/characters"><%= language.navbar.all %></a>
                         </li>
+
+                        <% if(level > characters.length || (permissions.includes('moderator') && permissions.includes('administrator'))){ %>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                 <a class="dropdown-item" href="/my-characters/new"><%= language.navbar.newCharacter %></a>
+                            </li>
+                        <% } %>
+
                       </ul>
                     </li>
         <%  }else{ %>
@@ -91,10 +105,18 @@
 
                   <% } %>
       </ul>
-      <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="<%= language.navbar.searchPlaceholder %>" aria-label="Search">
-        <button class="btn btn-success" type="submit"><%= language.navbar.search %></button>
-      </form>
+      <% if(permissions !== undefined && (permissions.includes('moderator') || permissions.includes('admin'))){ %>
+
+
+      <div class="dropdown d-none" id="admin-notification-dropdown">
+       <h4 class="text-danger d-inline-block align-middle mb-0"></h4> <button class="btn btn-danger rounded-circle" id="admin-notification-dropdown-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" id="admin-notification-dropdown-menu">
+
+        </ul>
+      </div>
+        <script src="/javascripts/admin/notifications.js"></script>
+       <% } %>
     </div>
   </div>
 </nav>

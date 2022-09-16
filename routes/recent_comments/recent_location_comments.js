@@ -39,7 +39,6 @@ router.get('/', async function (req, res, next) {
         }]
     ).toArray();
 
-    console.log(commentedLocations);
     //get characters for locations form database
     let charactersArray = [];
 

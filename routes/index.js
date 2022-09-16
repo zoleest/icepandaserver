@@ -13,6 +13,8 @@ router.get('/', function(req, res, next) {
           "isLoggedIn": req.session.loggedIn,
           "characters": req.session.userCharacters,
           "activeCharacter": req.session.activeCharacter,
+          "permissions": req.session.userPermissions,
+          "level": req.session.level,
         "titlePartial" : "Magyarország legkirályabb szerepjátéka!",
         "urlPartial": '',
               });

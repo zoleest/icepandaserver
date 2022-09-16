@@ -1,6 +1,7 @@
 const express = require('express');
 const Mongo = require("mongodb");
 const config = require("../../config");
+const language = require("../../languages/" + config.languageCode);
 const router = express.Router();
 const sanitize = require("mongo-sanitize");
 
@@ -40,14 +41,33 @@ router.get('/', async function (req, res) {
         //if there are existing document, then render, else render all
         if (characterById !== null) {
             res.render("characters/single_character", {"json": [characterById]});
-        } else {
-            getAllCharacters(res);
         }
     } else {
+
+        let charactersMenuJson = await MongoDBCollection.find({}, {
+            projection: {
+                'character_name_slug': 1,
+                'character_name': 1
+            }
+        }).sort({"character_name": 1}).limit(config.locationsPageLimit).toArray();
+
         //if id not set, render all
-        getAllCharacters(res);
+        res.render('characters/characters',
+            {
+                "charactersData": charactersMenuJson,
+                "config": config,
+                "language": language,
+                "isLoggedIn": req.session.loggedIn,
+                "characters": req.session.userCharacters,
+                "activeCharacter": req.session.activeCharacter,
+                "permissions": req.session.userPermissions,
+                "level": req.session.level,
+                "titlePartial": language.locations.locations,
+                "urlPartial": '/characters'
+            });
 
     }
+
 
 });
 
