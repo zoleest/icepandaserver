@@ -37,7 +37,11 @@ const commentsRouter = require('./routes/comments/comments');
 //Coupons
 const couponsRouter = require('./routes/coupons/coupons');
 //Recent comments
-const recentCommentsRouter = require('./routes/recent_comments/recent_comments');
+const recentLocationCommentsRouter = require('./routes/recent_comments/recent_location_comments');
+const recentPageCommentsRouter = require('./routes/recent_comments/recent_page_comments');
+
+//Pages
+const pagesRouter = require('./routes/pages/pages');
 
 const app = express();
 
@@ -49,17 +53,18 @@ app.set('view engine', 'ejs');
 //Session building
 
 let store = new MongoStore({
-  mongoUrl: config.mongoUrl,
-  dbName : "IcePanda",
-  collection: "sessions"
+    mongoUrl: config.mongoUrl,
+    dbName: "IcePanda",
+    collection: "sessions"
 });
 
 app.use(requestSession = session({
-  secret: config.sessionSecret,
-  saveUninitialized: true,
-  resave: false,
-  store: store,
-  cookie: { maxAge: 1000*60*60*24*config.maxSessionDays }}));
+    secret: config.sessionSecret,
+    saveUninitialized: true,
+    resave: false,
+    store: store,
+    cookie: {maxAge: 1000 * 60 * 60 * 24 * config.maxSessionDays}
+}));
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -97,11 +102,15 @@ app.use('/comments', commentsRouter);
 //Coupons
 app.use('/coupons', couponsRouter);
 //Recent comments
-app.use('/recent-comments', recentCommentsRouter);
+app.use('/recent-location-comments', recentLocationCommentsRouter);
+app.use('/recent-page-comments', recentPageCommentsRouter);
+
+//Pages
+app.use('/pages', pagesRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.use(function (req, res, next) {
+    next(createError(404));
 });
 
 
@@ -115,18 +124,21 @@ const MongoDBCollection = MongoClient.db("IcePanda").collection("IcePandaUsers")
 //Cron to upgrade levels
 const job = new CronJob(
     '0 0 0 * * *',
-    function() {
-      let today = new Date();
+    function () {
+        let today = new Date();
 
         //last month's date and today's date
-     let dateString = today.toLocaleString();
+        let dateString = today.toLocaleString();
 
 
-        today.setMonth(today.getMonth()-1);
-     let previousDateString = today.toLocaleString();
+        today.setMonth(today.getMonth() - 1);
+        let previousDateString = today.toLocaleString();
 
 
-        MongoDBCollection.updateMany({"lastUpdate": {$lte : previousDateString}},{$inc: {"level": 1},$set:{"lastUpdate": dateString}});
+        MongoDBCollection.updateMany({"lastUpdate": {$lte: previousDateString}}, {
+            $inc: {"level": 1},
+            $set: {"lastUpdate": dateString}
+        });
     },
     null,
     true,
@@ -134,23 +146,15 @@ const job = new CronJob(
 );
 
 
-
-
-
-
-
-
-
-
 // error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function (err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 

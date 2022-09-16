@@ -6,7 +6,7 @@ const language = {
     * 4. Login
     * 5. Registration
     * 6. Error defaults
-    *
+    * 7. Pages
     *
     */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,13 +75,13 @@ const language = {
 
     'registration': {
 
-        'title':'Regisztráció',
+        'title': 'Regisztráció',
         'usernameLabel': 'Felhasználónév',
         'passwordLabel': 'Jelszó',
-        'passwordAgainLabel':'Jelszó ismét',
+        'passwordAgainLabel': 'Jelszó ismét',
         'emailLabel': 'E-mail cím',
 
-        'wrongUsernameFormat':'Nem megfelelő formátumú felhasználónév! Kövesd az utasításokat!',
+        'wrongUsernameFormat': 'Nem megfelelő formátumú felhasználónév! Kövesd az utasításokat!',
         'wrongPasswordLength': 'A jelszó nem lehet nyolc karakternél rövidebb!',
         'passwordMismatch': 'A jelszó és megerősítése nem egyezik!',
         'wrongEmailFormat': 'Nem megfelelő formátumú e-mail cím! Kövesd az utasításokat!',
@@ -97,7 +97,21 @@ const language = {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     'errorDefaults': {
         'error': 'Hiba'
-    }
+    },
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//7. Locations
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    'pages': {
+        'pages': 'Helyszínek',
+
+        'lastComments': 'Legutóbbi hozzászólások:',
+        'selectedCharacter': 'Kiválasztott karakter:',
+        'comments': 'Hozzászólások:',
+        'characterSelector': 'Karakter választó'
+
+
+    },
 
 }
 module.exports = language;

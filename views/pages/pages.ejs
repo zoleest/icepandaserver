@@ -1,0 +1,138 @@
+    <!DOCTYPE html>
+    <html>
+        <%- include('../partials/head'); %>
+      <body>
+        <div id="content" class="container-fluid min-vh-100 d-flex flex-column mx-0 px-0" >
+              <div class="row px-2"><%- include('../partials/navbar'); %></div>
+              <div class="row">
+                    <div class="col-12 flex-grow-1 mx-0 px-0  position-relative ">
+                          <img class="mx-0 px-0 max-w-100 img-fluid " src="/images/pages/<%=pageData.page_slug%>.webp">
+                          <h1 class="position-absolute top-50 start-50 translate-middle text-white shadow-lg d-block bg-dark bg-opacity-75 p-4" style="z-index: 100;"><%=pageData.page_name %></h1>
+                    </div>
+
+               </div>
+               <div class="row">
+                    <div class="col-12 bg-dark text-light px-4 pt-4">
+                    <%-pageData.page_description %>
+                    </div>
+               </div>
+
+                <% if(pageData.page_commentable){ %>
+                   <div class="row text-light">
+                       <div class="col-12 d-block d-lg-none bg-dark text-light mobile-character-data h-100 py-2 ps-3">
+                            <nav class="navbar navbar-expand-lg navbar-dark bg-dark z-100">
+                               <div class="container-fluid">
+                                   <a class="navbar-brand" href="#"><%= language.pages.lastComments %></a>
+                                   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#recent-comments-mini" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                       <span class="navbar-toggler-icon"></span>
+                                   </button>
+                                   <div class="collapse navbar-collapse" id="recent-comments-mini">
+
+                                   </div>
+                               </div>
+                           </nav>
+                       </div>
+                    </div>
+
+                  <% if (selectedCharacter !== undefined) { %>
+                       <div class="row flex-column">
+                            <div class="col-12 d-block d-lg-none bg-dark text-light mobile-character-data h-100 py-2 ps-3">
+                                <p class="h-100"><%= language.pages.selectedCharacter %> <img class="rounded-circle mx-2" src="/images/avatars/<%=selectedCharacter.slug%>.webp"> <%=selectedCharacter.name%>. <br>
+                            </div>
+                            <div class="col-12 d-block d-lg-none bg-dark text-light mobile-character-data h-100 py-2 ps-3">
+                                 <%= language.pages.characterSelector %>:<span id="character-changer-mini"></span></p>
+                            </div>
+                       </div>
+
+
+                      <div class="row">
+                            <div class="col-12 col-lg-8 bg-dark ps-3 px-2 pt-3">
+
+                                <% if(CKEPosition !== "none"){ %>
+                                    <form action="/comments" method="post">
+                                    <input type="hidden" name="page" value ="<%=pageData.page_slug%>">
+                                    <textarea name="comment"></textarea>
+                                    <input type="submit" class="btn btn-success mt-3">
+                                    </form>
+                                <% }%>
+
+                            </div>
+
+                            <div class="col-lg-4 d-none d-lg-block bg-dark px-5 pt-2 text-center text-light">
+                                    <h3><%= language.pages.selectedCharacter %></h3>
+                                    <img class="rounded-circle w-75" src="/images/profile_pictures/<%=selectedCharacter.slug%>.webp">
+                                     <h3><%=selectedCharacter.name%><h3>
+
+                            </div>
+                      </div>
+                  <% } %>
+                  <div class="row">
+                        <div class="col-12 col-lg-8 bg-dark">
+
+                            <section>
+                                <div class="container-fluid pt-3 px-3">
+                                    <div class="row d-flex justify-content-center">
+                                        <div class="col-12 p-0">
+                                            <div class="card text-light bg-dark">
+                                                <h4 class="mb-0"><%= language.pages.comments %></h4>
+
+                                                <%
+                                                comments.forEach(function(comment){
+                                                %>
+
+                                                <div class="card-body p-4">
+                                                    <div class="d-flex flex-start">
+                                                        <img class="rounded-circle shadow-1-strong me-3"
+                                                             src="/images/avatars/<%=comment.comment_character_slug %>.webp" alt="avatar" width="60"
+                                                             height="60" />
+                                                        <div>
+                                                            <h6 class="fw-bold mb-1"><%=comment.comment_character%></h6>
+                                                            <div class="d-flex align-items-center mb-3">
+                                                                <p class="mb-0">
+                                                                    <%=comment.comment_date%>
+                                                                </p>
+                                                                <a href="#!" class="link-muted"><i class="fas fa-pencil-alt ms-2"></i></a>
+                                                                <a href="#!" class="link-muted"><i class="fas fa-redo-alt ms-2"></i></a>
+                                                                <a href="#!" class="link-muted"><i class="fas fa-heart ms-2"></i></a>
+                                                            </div>
+                                                            <div class="max-w-100 comment-card">
+                                                                <%-comment.comment_text.replace(/\[([^\)]+)\]/, "<strong>[$1]</strong>").replace(/\*([^\)]+)\*/, "<strong>[$1]</strong>") %><br>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <hr class="my-0" />
+
+                                                <%
+                                                });
+                                                %>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="col-lg-4 d-none d-lg-block bg-dark text-center text-light">
+                            <h5><%= language.pages.characterSelector %></h5>
+                            <div id="character-changer"></div>
+                            <div id="recent-comments" class="mt-4">
+                                <h4> <%= language.pages.lastComments %> <h4>
+                                <hr>
+                            </div>
+                        </div>
+                  </div>
+
+                <% } %>
+
+            </div>
+
+
+
+    <!-- <p><%-pageData.page_description %></p>
+    -->
+
+    <script src="/javascripts/page.js"></script>
+    </body>
+    </html>

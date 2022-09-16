@@ -6,70 +6,99 @@ const sanitize = require("mongo-sanitize");
 
 const MongoClient = new Mongo.MongoClient(config.mongoUrl);
 MongoClient.connect();
-const MongoDBCollection = {"locations": MongoClient.db("IcePanda").collection("IcePandaLocations"), "comments": MongoClient.db("IcePanda").collection("IcePandaComments"), "characters": MongoClient.db("IcePanda").collection("IcePandaCharacters") };
+const MongoDBCollection = {
+    "locations": MongoClient.db("IcePanda").collection("IcePandaLocations"),
+    "comments": MongoClient.db("IcePanda").collection("IcePandaComments"),
+    "characters": MongoClient.db("IcePanda").collection("IcePandaCharacters"),
+    "pages": MongoClient.db("IcePanda").collection("IcePandaPages")
+};
 
 
-router.post('/', async function(req, res){
+router.post('/', async function (req, res) {
 
     //Check if character chosen.
-    if(req.session.activeCharacter !== undefined){
+    if (req.session.activeCharacter !== undefined) {
         //Get and sanitize input
         let characterName = req.session.activeCharacter.name;
         let characterSlug = req.session.activeCharacter.slug;
-        let locationSlug = sanitize(req.body.location);
+        let commentedType = req.body.page === undefined && req.body.location !== undefined ? 'location' : 'page';
+        let commentedSlug = commentedType === 'location' ? sanitize(req.body.location) : sanitize(req.body.page);
         let commentText = sanitize(req.body.comment);
         let DateTime = new Date().toLocaleString();
 
         // Check is user input exits
-        if(locationSlug !== null && commentText !== null){
+        if (commentedSlug !== null && commentText !== null) {
 
             //Check the database if user can comment there
-            let location = await MongoDBCollection.locations.findOne({"location_slug": locationSlug, $or: [{"location_restricted_to": "0"}, {"location_restricted_to": characterSlug}]}, {projection:{"location_slug": 1, "location_name": 1}});
+            let commented = commentedType === 'location' ? await MongoDBCollection.locations.findOne({
+                "location_slug": commentedSlug,
+                $or: [{"location_restricted_to": "0"}, {"location_restricted_to": characterSlug}]
+            }, {
+                projection: {
+                    "location_slug": 1,
+                    "location_name": 1
+                }
+            }) : await MongoDBCollection.pages.findOne({"page_slug": commentedSlug}, {
+                projection: {
+                    "page_slug": 1,
+                    "page_name": 1
+                }
+            });
 
             //if can, insert comment to database
-            if(location.length !== 0 && commentText.length !== 0){
+            if (commented !== null && commentText.length !== 0) {
 
-                //If commentText length is greater than 500 character then give greater xp
+                if (commentedType === 'location') {
 
-                if(commentText.length <= 500){
+                    MongoDBCollection.comments.insertOne({
+                        "comment_location_name": commented.location_name,
+                        "comment_location": commentedSlug,
+                        "comment_character": characterName,
+                        "comment_character_slug": characterSlug,
+                        "comment_date": DateTime,
+                        "comment_text": commentText
+                    });
 
-                    MongoDBCollection.characters.updateOne( { "character_name_slug": characterSlug }, { $inc: { "character_xp": config.normalXpPerComment*req.session.level} });
 
-                }else{
+                } else {
 
+                    MongoDBCollection.comments.insertOne({
+                        "comment_page_name": commented.page_name,
+                        "comment_page": commentedSlug,
+                        "comment_character": characterName,
+                        "comment_character_slug": characterSlug,
+                        "comment_date": DateTime,
+                        "comment_text": commentText,
+                        "comment_allowed": req.session.userPermissions.includes('moderator') || req.session.userPermissions.includes('administrator')
+                    });
 
-                    MongoDBCollection.characters.updateOne( { "character_name_slug": characterSlug }, { $inc: { "character_xp": config.biggerXpPerComment*req.session.level} });
                 }
-
-                MongoDBCollection.comments.insertOne({"comment_location_name": location.location_name, "comment_location": locationSlug,"comment_character": characterName, "comment_character_slug": characterSlug, "comment_date": DateTime, "comment_text": commentText });
-
-
                 //after insert, redirect
                 res.writeHead(302, {
-                    'Location': '/locations?id='+locationSlug
+                    'Location': (commentedType === 'location' ? '/locations?id=' : '/pages?id=') + commentedSlug
                 });
                 res.end();
 
-            }else{
+            } else {
 
                 res.writeHead(302, {
-                    'Location': '/locations'
+                    'Location': '/asd'
                 });
                 res.end();
             }
-        }else{
+        } else {
 
             res.writeHead(302, {
-                'Location': '/locations'
+                'Location': '/asdasd'
             });
             res.end();
 
 
         }
-    }else{
+    } else {
 
         res.writeHead(302, {
-            'Location': '/locations'
+            'Location': '/asdasdasd'
         });
         res.end();
 

@@ -13,8 +13,6 @@ const MongoDBCollection = {"locations": MongoClient.db("IcePanda").collection("I
 /* GET users listing. */
 router.get('/', async function(req, res, next) {
 
-    // Get the page number, if not set, it changes for default 1
-    let page = (req.query.pg!==undefined && !isNaN(req.query.pg))?sanitize(req.query.pg):1;
     //get the type of the locations to list
     let tag = sanitize(req.query.tag);
     //get your slug to search for restricted locations
@@ -32,7 +30,7 @@ router.get('/', async function(req, res, next) {
 
 
             //get comment page number
-            let commentPage = (req.query.comment_pg !== undefined && !isNaN(req.comment_pg)) ? sanitize(req.query.comment_pg) : 1;
+            let commentPage = (req.query.pg !== undefined && !isNaN(req.pg)) ? sanitize(req.query.pg) : 1;
 
             //get comments from database
             let commentsJson = await MongoDBCollection.comments.find({"comment_location": locationSlug}).sort({"comment_date": -1}).skip((commentPage - 1) * config.commentPageLimit).limit(config.commentPageLimit).toArray();

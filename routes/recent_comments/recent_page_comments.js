@@ -8,23 +8,26 @@ MongoClient.connect();
 const MongoDBCollection = MongoClient.db("IcePanda").collection("IcePandaComments");
 
 /* GET json */
-router.get('/', async function(req, res, next) {
+router.get('/', async function (req, res, next) {
 
     //get the 3 days ago date
     let previousDateTime = new Date();
     previousDateTime.setDate(previousDateTime.getDate() - 3);
     let localeTime = previousDateTime.toLocaleString();
-    //get locations form database
-    let commentedLocations = await MongoDBCollection.aggregate([
-            {
-                '$match': {
-                    'comment_date': {
-                        '$gt': localeTime
-                    }
+    //get pages form database
+    let commentedpages = await MongoDBCollection.aggregate([
+        {
+            '$match': {
+                'comment_date': {
+                    '$gt': localeTime
+                },
+                'comment_page_name': {
+                    '$gt': ''
                 }
-            }, {
+            }
+        }, {
             '$group': {
-                '_id': '$comment_location_name',
+                '_id': '$comment_page_name',
                 'last_comment': {
                     '$last': '$comment_date'
                 }
@@ -36,18 +39,17 @@ router.get('/', async function(req, res, next) {
         }]
     ).toArray();
 
-    //get characters for locations form database
+    //get characters for pages form database
     let charactersArray = [];
 
-    for(let locationArrayCounter = 0; locationArrayCounter < commentedLocations.length; locationArrayCounter++){
+    for (let pageArrayCounter = 0; pageArrayCounter < commentedpages.length; pageArrayCounter++) {
 
-        let locationSlug = commentedLocations[locationArrayCounter]._id.replace(/ /g, '_').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        let pageSlug = commentedpages[pageArrayCounter]._id.replace(/ /g, '_').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         let characters = await MongoDBCollection.aggregate(
-
             [
                 {
                     '$match': {
-                        'comment_location': locationSlug,
+                        'comment_page': pageSlug,
                         'comment_date': {
                             '$gt': localeTime
                         }
@@ -66,25 +68,22 @@ router.get('/', async function(req, res, next) {
                     }
                 }
             ]
-
         ).toArray();
 
-        charactersArray.push({"slug": locationSlug, "characters": characters});
+        charactersArray.push({"slug": pageSlug, "characters": characters});
     }
 
     //get last comment data
-    let lastComment = await MongoDBCollection.findOne({},{sort: { "comment_date": -1 } ,projection:{"comment_date": 1}});
+    let lastComment = await MongoDBCollection.findOne({}, {
+        sort: {"comment_date": -1},
+        projection: {"comment_date": 1}
+    });
 
-    res.json({"locations": commentedLocations, "details": charactersArray, "lastCommentDate": lastComment.comment_date});
-
-});
-
-/* GET json */
-router.get('/last-comment', async function(req, res, next) {
-    //get last comment data
-    let lastComment = await MongoDBCollection.findOne({},{sort: { "comment_date": -1 } ,projection:{"comment_date": 1}});
-
-    res.json({"lastCommentDate": lastComment.comment_date});
+    res.json({
+        "pages": commentedpages,
+        "details": charactersArray,
+        "lastCommentDate": lastComment.comment_date
+    });
 
 });
 
