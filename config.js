@@ -6,6 +6,7 @@ const config = {
 
     //Url for Mongo connection
     "mongoUrl": "mongodb://localhost:27017/",
+    "databaseName": "IcePanda",
 
     //Website name
     "websiteName": "Szerepjáték.net",

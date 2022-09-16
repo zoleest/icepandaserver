@@ -9,8 +9,8 @@ const sanitize = require("mongo-sanitize")
 const MongoClient = new Mongo.MongoClient(config.mongoUrl);
 MongoClient.connect();
 const MongoDBCollection = {
-    "pages": MongoClient.db("IcePanda").collection("IcePandaPages"),
-    "comments": MongoClient.db("IcePanda").collection("IcePandaComments")
+    "pages": MongoClient.db(config.databaseName).collection(config.databaseName+"Pages"),
+    "comments": MongoClient.db(config.databaseName).collection(config.databaseName+"Comments")
 };
 
 /* GET users listing. */

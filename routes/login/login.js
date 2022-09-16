@@ -57,8 +57,8 @@ router.post('/', async function (req, res) {
             const MongoClient = new Mongo.MongoClient(config.mongoUrl);
             MongoClient.connect();
             const MongoDBCollection = {
-                "users": MongoClient.db("IcePanda").collection("IcePandaUsers"),
-                "characters": MongoClient.db("IcePanda").collection("IcePandaCharacters")
+                "users": MongoClient.db(config.databaseName).collection(config.databaseName + "Users"),
+                "characters": MongoClient.db(config.databaseName).collection(config.databaseName + "Characters")
             };
 
             //Checks for the username, and get the password for validation

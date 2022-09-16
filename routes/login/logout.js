@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/', function(req, res){
+router.get('/', function (req, res) {
 
     req.session.destroy();
 
@@ -11,10 +11,9 @@ router.get('/', function(req, res){
     res.end();
 
 
-
 });
 
-router.post('/', function(req, res){
+router.post('/', function (req, res) {
 
     req.session.destroy();
 

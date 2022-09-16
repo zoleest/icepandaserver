@@ -7,10 +7,10 @@ const sanitize = require("mongo-sanitize");
 const MongoClient = new Mongo.MongoClient(config.mongoUrl);
 MongoClient.connect();
 const MongoDBCollection = {
-    "locations": MongoClient.db("IcePanda").collection("IcePandaLocations"),
-    "comments": MongoClient.db("IcePanda").collection("IcePandaComments"),
-    "characters": MongoClient.db("IcePanda").collection("IcePandaCharacters"),
-    "pages": MongoClient.db("IcePanda").collection("IcePandaPages")
+    "locations": MongoClient.db(config.databaseName).collection(config.databaseName + "Locations"),
+    "comments": MongoClient.db(config.databaseName).collection(config.databaseName + "Comments"),
+    "characters": MongoClient.db("config.databaseName").collection(config.databaseName + "Characters"),
+    "pages": MongoClient.db(config.databaseName).collection(config.databaseName + "Pages")
 };
 
 

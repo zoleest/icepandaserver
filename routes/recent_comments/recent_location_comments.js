@@ -5,7 +5,7 @@ const config = require("../../config");
 
 const MongoClient = new Mongo.MongoClient(config.mongoUrl);
 MongoClient.connect();
-const MongoDBCollection = MongoClient.db("IcePanda").collection("IcePandaComments");
+const MongoDBCollection = MongoClient.db(config.databaseName).collection(config.databaseName+"Comments");
 
 /* GET json */
 router.get('/', async function (req, res, next) {
