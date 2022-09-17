@@ -121,7 +121,33 @@ const language = {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     'characters': {
-        'locations': 'Karakterek'
+        'locations': 'Karakterek',
+
+        'newCharacter': "Új karakter",
+
+        'namePlaceholder': 'Eddard Stark',
+        'nicknamePlaceholder': 'Ned Stark',
+        'speciesPlaceholder': 'Ember',
+        'sexualityPlaceholder': 'Válassz!',
+        'sexPlaceholder': 'Válassz!',
+
+        'name': 'Név',
+        'nickname': 'Becenév',
+        'birthday': 'Születésnap',
+        'species':  'Faj',
+        'sexuality': 'Szexualitás',
+        'sex': 'Nem',
+        'profilePic': 'Profilkép',
+
+        'sexualityHeterosexual': 'Heteroszexuális',
+        'sexualityHomosexual': 'Homoszexuális',
+        'sexualityAsexual': 'Aszexuális',
+        'sexualityBisexual': 'Biszexuális',
+        'sexualityOther': 'Egyéb',
+
+        'sexMale': 'Férfi',
+        'sexFemale': 'Nő',
+
 
 
     }

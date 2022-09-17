@@ -23,8 +23,16 @@ router.get('/', async function (req, res) {
 
         //if allowed is more than used, or user is admin, then render the form
 
-        if ((req.session.level + req.session.userMonthSinceRegistration > req.session.userCharacters.length) || req.session.userPermissions.includes('administrator') || req.session.userPermissions.includes('moderator')) {
-            res.render("my_characters/new_character_form");
+        if ((req.session.level > req.session.userCharacters.length) || req.session.userPermissions.includes('administrator') || req.session.userPermissions.includes('moderator')) {
+            res.render("my_characters/new_character_form", {
+                "config": config,
+                "language": language,
+                "titlePartial": language.characters.newCharacter,
+                "permissions": req.session.userPermissions,
+                "level": req.session.level,
+                "urlPartial": '/my-character/new',
+                "CKEPosition": 'comment'
+            });
         } else {
             res.render("my_characters/new_character_exceeded_limit");
         }
@@ -53,7 +61,7 @@ router.post('/', async function (req, res) {
             let nickname = sanitize(req.body.nickname);
             let birthday = sanitize(req.body.birthday);
             let species = sanitize(req.body.species);
-            let gender = sanitize(req.body.gender);
+            let sexuality = sanitize(req.body.sexuality);
             let sex = sanitize(req.body.sex);
             let weapons = [];
             let abilities = [];
@@ -157,7 +165,7 @@ router.post('/', async function (req, res) {
                     "character_nicknames": nickname,
                     "character_birthday_date": birthday,
                     "character_species": species,
-                    "character_gender": gender,
+                    "character_sexuality": sexuality,
                     "character_sex": sex,
                     "character_weapons:": weapons,
                     "character_abilities": abilities,

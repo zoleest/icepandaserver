@@ -1,48 +1,73 @@
-<link rel="stylesheet" href="/stylesheets/croppie.css" />
-<script src="/javascripts/croppie.js"></script>
+<!DOCTYPE html>
+<html>
+    <%- include('../partials/head'); %>
+  <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 col-lg-6 p-3 bg-light bg-opacity-75">
+                    <form method="POST">
+                        <label for="name"><%=language.characters.name%>:<input class="form-control mb-2" id="name" name="name" placeholder="<%=language.characters.namePlaceholder%>"  required>
+                        <label for="nickname"><%=language.characters.nickname%>:<input class="form-control mb-2" id="nickname" name="nickname" placeholder="<%=language.characters.nicknamePlaceholder%>" required>
+                        <label for="birthday"><%=language.characters.birthday%><input class="form-control mb-2" id="birthday"  type="date" name="birthday" required>
+                        <label for="species"><%=language.characters.species%>:<input class="form-control mb-2" name="species" id="species" placeholder="<%=language.characters.speciesPlaceholder%>" required>
+                        <label for="sexuality"><%=language.characters.sexuality%>:<select class="form-select mb-2" id="sexuality" name="sexuality">
+                                        <option selected hidden disabled><%=language.characters.sexualityPlaceholder%> </option>
+                                        <option value="<%=language.characters.sexualityHeterosexual%>"><%=language.characters.sexualityHeterosexual%></option>
+                                        <option value="<%=language.characters.sexualityHomosexual%>"><%=language.characters.sexualityHomosexual%></option>
+                                        <option value="<%=language.characters.sexualityAsexual%>"><%=language.characters.sexualityAsexual%></option>
+                                        <option value="<%=language.characters.sexualityBisexual%>"><%=language.characters.sexualityBisexual%></option>
+                                        <option value="<%=language.characters.sexualityOther%>"><%=language.characters.sexualityOther %></option>
+                                    </select>
+                        <label for="sex"><%=language.characters.sex%>:<select class="form-select mb-2" name="sex" id="sex">
+                                         <option selected hidden disabled><%=language.characters.sexPlaceholder%></option>
+                                        <option value="<%=language.characters.sexMale%>"><%=language.characters.sexMale%></option>
+                                        <option value="<%=language.characters.sexFemale%>"><%=language.characters.sexFemale%></option>
+                            </select>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script src="https://cdn.ckeditor.com/4.17.1/standard/ckeditor.js"></script>
+
+
+                        <button type="button" id="change_image" style="display:none">Másik kép válaszása</button>
+                        <label for="profile_picture_file"><%=language.characters.profilePic%></label><input class="form-control" type="file" id="profile_picture_file" required >
+                        <input type="hidden" name ="profile_picture" id="profile_picture">
+
+                        Fegyverek:<input name="weapon_name"><textarea name="weapon_description"></textarea><br>
+                        <input name="weapon_name"><textarea name="weapon_description"></textarea><br>
+                        <input name="weapon_name"><textarea name="weapon_description"></textarea><br>
+                        <input name="weapon_name"><textarea name="weapon_description"></textarea><br>
+                        <input name="weapon_name"><textarea name="weapon_description"></textarea><br>
+                        <input name="weapon_name"><textarea name="weapon_description"></textarea><br><br><br>
+
+                        Képességek: <input name="ability_name"><textarea name="ability_description"></textarea><br>
+                        <input name="ability_name"><textarea name="ability_description"></textarea><br>
+                        <input name="ability_name"><textarea name="ability_description"></textarea><br>
+                        <input name="ability_name"><textarea name="ability_description"></textarea><br>
+                        <input name="ability_name"><textarea name="ability_description"></textarea><br>
+                        <input name="ability_name"><textarea name="ability_description"></textarea><br><br><br>
+
+                        Történet: <textarea name="story"></textarea><br>
+                        Érdeklődés: <textarea name="interests"></textarea><br>
+                        <input name="game_style">
+
+                        <input type="submit" id="submit_button">
+                    </form>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block bg-dark text-light pt-3">
+                    <h4 id="character-name" class="text-center"></h4>
+                    <div id="croppie-container">
+                        <img id="profile_picture_image">
+                   </div>
+                   <button class="btn btn-warning w-100" id="use">K</button>
+
+                </div>
+            </div>
+        </div>
+   </body>
+
+
+
+
+
+
+
+
 <script src="/javascripts/character_edit.js"></script>
-
-<link rel="stylesheet" href="/stylesheets/character_edit.css">
-
-
-<form method="POST" id="new_character_form">
-    Név:<input name="name" required><br>
-    Becenevek:<input name="nickname" required><br>
-    Születésnap<input name="birthday" required><br>
-    Faj:<input name="species" required><br>
-    Szexualitás:<input name="gender" required><br>
-    Nem:<input name="sex" required><br>
-
-
-    <div id="croppie-container">
-
-       <img id="profile_picture_image">
-    </div>
-    <button id="use" type="button">asd</button>
-    <button type="button" id="change_image" style="display:none">Másik kép válaszása</button>
-    Profilkép: <input type="file" id="profile_picture_file" >
-    <input type="hidden" name ="profile_picture" id="profile_picture">
-
-    Fegyverek:<input name="weapon_name"><textarea name="weapon_description"></textarea><br>
-    <input name="weapon_name"><textarea name="weapon_description"></textarea><br>
-    <input name="weapon_name"><textarea name="weapon_description"></textarea><br>
-    <input name="weapon_name"><textarea name="weapon_description"></textarea><br>
-    <input name="weapon_name"><textarea name="weapon_description"></textarea><br>
-    <input name="weapon_name"><textarea name="weapon_description"></textarea><br><br><br>
-
-    Képességek: <input name="ability_name"><textarea name="ability_description"></textarea><br>
-    <input name="ability_name"><textarea name="ability_description"></textarea><br>
-    <input name="ability_name"><textarea name="ability_description"></textarea><br>
-    <input name="ability_name"><textarea name="ability_description"></textarea><br>
-    <input name="ability_name"><textarea name="ability_description"></textarea><br>
-    <input name="ability_name"><textarea name="ability_description"></textarea><br><br><br>
-
-    Történet: <textarea name="story"></textarea><br>
-    Érdeklődés: <textarea name="interests"></textarea><br>
-    <input name="game_style">
-
-    <input type="submit" id="submit_button">
-</form>

@@ -6,6 +6,12 @@ function checkEnter(e){
     return txtArea || (e.keyCode || e.which || e.charCode || 0) !== 13;
 }
 
+function copyFormData(){
+
+    $('#character-name').text($('#name').val());
+
+}
+
 $(document).ready(function(){
 
 
