@@ -5,7 +5,7 @@ const language = require("../../languages/" + config.languageCode)
 const Mongo = require("mongodb");
 
 
-const MongoClient = new Mongo.MongoClient(config.mongoUrl);
+const MongoClient = new Mongo.MongoClient(config.mongoUrl, {useNewUrlParser: true});
 MongoClient.connect();
 const MongoDBCollection = {'comments': MongoClient.db(config.databaseName).collection(config.databaseName + "Comments")};
 

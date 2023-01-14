@@ -54,12 +54,21 @@ router.post('/', async function (req, res) {
         if (usernameRegex.test(username)) {
 
             //connect to mongodb collection
-            const MongoClient = new Mongo.MongoClient(config.mongoUrl);
+            const MongoClient = new Mongo.MongoClient(config.mongoUrl, {useNewUrlParser: true});
             MongoClient.connect();
             const MongoDBCollection = {
                 "users": MongoClient.db(config.databaseName).collection(config.databaseName + "Users"),
                 "characters": MongoClient.db(config.databaseName).collection(config.databaseName + "Characters")
             };
+
+            try {
+                    await  MongoDBCollection.users.findOne({}) // duplicate key error
+            } catch (error) {
+                if (error) {
+                    console.log(`Error worth logging: ${error}`); // special case for some reason
+                }
+                throw error; // still want to crash
+            }
 
             //Checks for the username, and get the password for validation
             let loginData = await MongoDBCollection.users.findOne({

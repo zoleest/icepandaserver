@@ -11,9 +11,9 @@ const nodemailer = require("nodemailer");
 const emailTemplate = require("../../mail_templates/lost-password");
 
 //connect Mongo
-const MongoClient = new Mongo.MongoClient(config.mongoUrl);
+const MongoClient = new Mongo.MongoClient(config.mongoUrl, {useNewUrlParser: true});
 MongoClient.connect();
-const MongoDBCollection = MongoClient.db(config.databaseName).collection(config.databaseName+"PandaUsers");
+const MongoDBCollection = MongoClient.db(config.databaseName).collection(config.databaseName+"Users");
 
 
 router.get('/', function (req, res) {

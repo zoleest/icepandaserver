@@ -4,7 +4,7 @@ const config = require("../../config");
 const router = express.Router();
 const sanitize = require("mongo-sanitize");
 
-const MongoClient = new Mongo.MongoClient(config.mongoUrl);
+const MongoClient = new Mongo.MongoClient(config.mongoUrl, {useNewUrlParser: true});
 MongoClient.connect();
 const MongoDBCollection = MongoClient.db(config.databaseName).collection(config.databaseName+"Characters");
 

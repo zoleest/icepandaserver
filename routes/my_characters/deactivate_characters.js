@@ -6,7 +6,7 @@ const config = require('../../config');
 const Mongo = require("mongodb");
 
 //connect to mongo and two collection
-const MongoClient = new Mongo.MongoClient(config.mongoUrl);
+const MongoClient = new Mongo.MongoClient(config.mongoUrl, {useNewUrlParser: true});
 MongoClient.connect();
 const MongoDBCollections = {
     'users': MongoClient.db(config.databaseName).collection(config.databaseName+"Users"),

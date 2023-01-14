@@ -17,7 +17,6 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 //Registration
 const registrationRouter = require('./routes/registration/registration');
-const activationRouter = require('./routes/registration/activation');
 //Login
 const loginRouter = require('./routes/login/login');
 const lostPasswordRouter = require('./routes/login/lost_password');
@@ -83,7 +82,6 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 //Registration
 app.use('/registration', registrationRouter);
-app.use('/activation', activationRouter);
 //Login
 app.use('/login', loginRouter);
 app.use('/lost-password', lostPasswordRouter);

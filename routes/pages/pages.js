@@ -6,7 +6,7 @@ const language = require("../../languages/" + config.languageCode);
 const sanitize = require("mongo-sanitize")
 
 
-const MongoClient = new Mongo.MongoClient(config.mongoUrl);
+const MongoClient = new Mongo.MongoClient(config.mongoUrl, {useNewUrlParser: true});
 MongoClient.connect();
 const MongoDBCollection = {
     "pages": MongoClient.db(config.databaseName).collection(config.databaseName + "Pages"),

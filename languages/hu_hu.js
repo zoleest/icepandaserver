@@ -35,6 +35,12 @@ const language = {
 
     },
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//2. Frontpage
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    'frontpage':{
+        title: "Magyarország legkirályabb szerepjáték oldala!"
+    },
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //3. Locations
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     'locations': {
@@ -92,7 +98,20 @@ const language = {
         'existingEmail': 'Az e-mail cím már foglalt. Próbálj másikat!',
         'existingUser': 'A felhasználónév már foglalt. Próbálj másikat!',
 
-        'activationMailTitle': 'Regisztráció aktiválása'
+        'successTitle': "Sikeres regisztráció",
+        'successMessage': "Sikeresen regisztráltál az oldalunkra!\n" +
+            "Már csak egy teendőd van hátra, hogy játszhass velünk az oldalon: Erősítsd meg a regisztrációd a linken keresztül, melyet e-mailben küldtünk el neked.\n" +
+            "Köszönjük a belénk vetett bizalmadat. Ígérjük, nem fogod megbánni!\n"+
+            "Legyen szép napod :) ",
+
+
+        'activationMailTitle': 'Regisztráció aktiválása',
+
+        'activationTitle': "Felhasználó aktiválása",
+        'activationKeyNotFoundTitle': "Sikertelen aktiválás",
+        'activationKeyNotFoundMessage': "Az aktiváló kulcs nem található! Kérlek próbáld újra!",
+        'activationSuccessTitle': "Sikeres aktiválás",
+        'activationSuccessMessage': "Sikeresen aktiváltad a felhasználódat. Hogy elkezdhesd a játékot az oldalon, kattints a gombra a felirat alatt!"
     },
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
