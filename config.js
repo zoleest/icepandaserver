@@ -46,6 +46,9 @@ const config = {
     //Comments per page
     "commentPageLimit": 20,
 
+    //Displayed recent comments' days
+    "recentCommentsDays": 3,
+
     //Minimal character count for bigger xp
     "minCharacterCountForBiggerXp": 500,
 

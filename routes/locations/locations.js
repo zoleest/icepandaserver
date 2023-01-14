@@ -14,7 +14,7 @@ const MongoDBCollection = {
 };
 
 /* GET users listing. */
-router.get('/', async function (req, res, next) {
+router.get('/:id', async function (req, res, next) {
 
     //get the type of the locations to list
     let tag = sanitize(req.query.tag);
@@ -25,9 +25,9 @@ router.get('/', async function (req, res, next) {
     let commentPage = (req.query.pg !== undefined && !isNaN(req.pg)) ? sanitize(req.query.pg) : 1;
 
 
-    if (req.query.id !== undefined) {
+    if (req.params.id !== undefined) {
         //get and sanitize the slug from query
-        let locationSlug = sanitize(req.query.id);
+        let locationSlug = sanitize(req.params.id);
 
         //Get the desired location's data
         let locationJson = await MongoDBCollection.locations.findOne({"location_slug": locationSlug});
@@ -64,7 +64,7 @@ router.get('/', async function (req, res, next) {
                         "titlePartial": locationJson.location_name,
                         "permissions": req.session.userPermissions,
                         "level": req.session.level,
-                        "urlPartial": '/location?id=' + req.query.id,
+                        "urlPartial": '/location/' + req.params.id,
                         "CKEPosition": 'comment'
                     });
             } else {

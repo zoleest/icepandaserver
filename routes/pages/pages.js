@@ -14,15 +14,15 @@ const MongoDBCollection = {
 };
 
 /* GET users listing. */
-router.get('/', async function (req, res, next) {
+router.get('/:id', async function (req, res, next) {
 
 
     //The Json array that contains comments
     let commentsJson = [];
 
-    if (req.query.id !== undefined) {
+    if (req.params.id) {
         //get and sanitize the slug from query
-        let pageSlug = sanitize(req.query.id);
+        let pageSlug = sanitize(req.params.id);
 
         //Get the desired location's data
         let pageJson = await MongoDBCollection.pages.findOne({"page_slug": pageSlug});

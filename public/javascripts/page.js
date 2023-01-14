@@ -32,7 +32,7 @@ $(document).ready(function () {
         for (let locationCounter = 0; locationCounter < (type === 'locations' ? data.locations.length : data.pages.length); locationCounter++) {
             let locationAnchor = document.createElement('a');
             locationAnchor.className = "link link-danger";
-            locationAnchor.href = "/" + type + "?id=" + data.details[locationCounter].slug;
+            locationAnchor.href = "/" + type + "/" + data.details[locationCounter].slug;
 
             let locationTextNode = document.createElement('h5');
             locationTextNode.textContent = type === 'locations' ? data.locations[locationCounter]._id : data.pages[locationCounter]._id;
@@ -89,7 +89,7 @@ $(document).ready(function () {
 
             let redirectingLinkAnchor = document.createElement('a');
             redirectingLinkAnchor.textContent = "Tovább ide!";
-            redirectingLinkAnchor.href = "/" + type + "?id=" + data.details[locationCounter].slug;
+            redirectingLinkAnchor.href = "/" + type + "/" + data.details[locationCounter].slug;
             redirectingLinkAnchor.className = "link link-danger";
 
             redirectingLinkItem.appendChild(redirectingLinkAnchor);
@@ -117,7 +117,7 @@ $(document).ready(function () {
     //LOADING RECENT LOCATION COMMENTS AND WATCH FOR UPDATE
 
     $.ajax({
-        url: '/recent-location-comments',
+        url: '/recent/locations',
         success: function (response) {
             drawRecentComments(response, 'locations');
 
@@ -125,7 +125,7 @@ $(document).ready(function () {
                 function () {
 
                     $.ajax({
-                        url: '/recent-location-comments/last-comment',
+                        url: '/recent/last-comment',
                         success: function (subresponse) {
                             if (subresponse.lastCommentDate > response.lastCommentDate) {
 
@@ -158,7 +158,7 @@ $(document).ready(function () {
     });
 
     $.ajax({
-        url: '/recent-page-comments',
+        url: '/recent/pages',
         success: function (response) {
             drawRecentComments(response, 'pages');
         }
