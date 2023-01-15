@@ -75,7 +75,7 @@ router.post('/', async function (req, res) {
                 }
                 //after insert, redirect
                 res.writeHead(302, {
-                    'Location': (commentedType === 'location' ? '/locations?id=' : '/pages?id=') + commentedSlug
+                    'Location': (commentedType === 'location' ? '/game?id=' : '/pages?id=') + commentedSlug
                 });
                 res.end();
 

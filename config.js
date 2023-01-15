@@ -5,7 +5,8 @@ const config = {
     "languageCode" : "hu_hu",
 
     //Url for Mongo connection
-    "mongoUrl": "mongodb+srv://IcePanda:RosaDiaz1981@cluster0.flcvgmq.mongodb.net/IcePanda?retryWrites=true&w=majority",
+   // "mongoUrl": "mongodb+srv://IcePanda:RosaDiaz1981@cluster0.flcvgmq.mongodb.net/IcePanda?retryWrites=true&w=majority",
+    "mongoUrl": "mongodb://localhost:27017/",
     "databaseName": "IcePanda",
 
     //Website name

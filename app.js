@@ -30,7 +30,7 @@ const editCharacterRouter = require('./routes/my_characters/edit_character');
 //Characters
 const charactersRouter = require('./routes/characters/characters');
 //Locations
-const locationsRouter = require('./routes/locations/locations');
+const gameRouter = require('./routes/game/game');
 //Comments
 const commentsRouter = require('./routes/comments/comments');
 //Coupons
@@ -94,16 +94,13 @@ app.use('/image_processor', imageProcessorRouter);
 //Characters
 app.use('/characters', charactersRouter);
 //Locations
-app.use('/locations', locationsRouter);
+app.use('/game', gameRouter);
 //Comments
 app.use('/comments', commentsRouter);
 //Coupons
 app.use('/coupons', couponsRouter);
 //Recent comments
 app.use('/recent', recentLocationCommentsRouter);
-
-//Pages
-app.use('/pages', pagesRouter);
 
 //admin
 //Notifications
