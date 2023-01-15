@@ -78,7 +78,7 @@ router.post('/', async function (req, res) {
                     weapons.push({
                         "weapon_name": sanitize(req.body.weapon_name[index]),
                         "weapon_description": sanitize(req.body.weapon_description[index])
-                    })
+                    });
                 }
             });
 
@@ -167,7 +167,7 @@ router.post('/', async function (req, res) {
                     "character_species": species,
                     "character_sexuality": sexuality,
                     "character_sex": sex,
-                    "character_weapons:": weapons,
+                    "character_weapons": weapons,
                     "character_abilities": abilities,
                     "character_relationships": [],
                     "character_properties": [],

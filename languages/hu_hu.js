@@ -149,6 +149,9 @@ const language = {
         'speciesPlaceholder': 'Ember',
         'sexualityPlaceholder': 'Válassz!',
         'sexPlaceholder': 'Válassz!',
+        'description': 'Leírás',
+        'fieldName': 'Név',
+
 
         'name': 'Név',
         'nickname': 'Becenév',
@@ -156,7 +159,15 @@ const language = {
         'species':  'Faj',
         'sexuality': 'Szexualitás',
         'sex': 'Nem',
+        'weapons': 'Fegyverek',
+        'abilities':'Képességek',
+        'relationsips': 'Kapcsolatok',
+        'properties': 'Tulajdonai',
+        'story': 'Történet',
+        'interests': 'Érdeklődési körök',
         'profilePic': 'Profilkép',
+        'xp': "XP pontok",
+
 
         'sexualityHeterosexual': 'Heteroszexuális',
         'sexualityHomosexual': 'Homoszexuális',

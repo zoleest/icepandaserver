@@ -37,8 +37,7 @@ const commentsRouter = require('./routes/comments/comments');
 const couponsRouter = require('./routes/coupons/coupons');
 //Recent comments
 const recentLocationCommentsRouter = require('./routes/recent_comments/recent_location_comments');
-//Pages
-const pagesRouter = require('./routes/pages/pages');
+
 const notificationsRouter = require('./routes/admin/notifications');
 
 

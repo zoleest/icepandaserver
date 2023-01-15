@@ -75,21 +75,21 @@ router.post('/', async function (req, res) {
                 }
                 //after insert, redirect
                 res.writeHead(302, {
-                    'Location': (commentedType === 'location' ? '/game?id=' : '/pages?id=') + commentedSlug
+                    'Location': (commentedType === 'location' ? '/game/locations/public/' : 'game/pages/public') + commentedSlug
                 });
                 res.end();
 
             } else {
 
                 res.writeHead(302, {
-                    'Location': '/asd'
+                    'Location': '/'
                 });
                 res.end();
             }
         } else {
 
             res.writeHead(302, {
-                'Location': '/asdasd'
+                'Location': '/'
             });
             res.end();
 
@@ -98,7 +98,7 @@ router.post('/', async function (req, res) {
     } else {
 
         res.writeHead(302, {
-            'Location': '/asdasdasd'
+            'Location': '/'
         });
         res.end();
 

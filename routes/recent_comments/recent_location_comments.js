@@ -18,11 +18,11 @@ function getPreviousDate(){
 }
 
 /* GET json */
-router.get('/game', async function (req, res, next) {
+router.get('/locations', async function (req, res, next) {
 
     //get the 3 days ago date
 
-    //get game form database
+    //get location form database
 
     try {
         let commentedLocations = await MongoDBCollection.aggregate([
@@ -49,7 +49,7 @@ router.get('/game', async function (req, res, next) {
             }]
         ).toArray();
 
-        //get characters for game form database
+        //get characters for location form database
         let charactersArray = [];
 
 
@@ -110,7 +110,7 @@ router.get('/game', async function (req, res, next) {
 
 router.get('/pages', async function (req, res, next) {
 
-   //get pagess form database
+   //get pages form database
 
     try {
         let commentedPages = await MongoDBCollection.aggregate([
@@ -137,7 +137,7 @@ router.get('/pages', async function (req, res, next) {
             }]
         ).toArray();
 
-        //get characters for game form database
+        //get characters for location form database
         let charactersArray = [];
 
 

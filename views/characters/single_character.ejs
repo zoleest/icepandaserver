@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<%- include('../partials/head'); %>
+<body class="vh-100">
+<div id="content" class="container-fluid d-flex flex-column mx-0 px-0">
+    <div class="row px-2"><%- include('../partials/navbar'); %></div>
+</div>
+<div class="row bg-dark bg-opacity-50">
+    <div class="col-2 d-none d-lg-block"></div>
+    <div class="col-12 col-lg-5 text-center px-4 pt-3  bg-dark text-light bg-opacity-75">
+
+        <h1 class="text-center"><%- json.character_name %></h1>
+        <div class="row">
+            <div class="col-3 d-none d-lg-block"></div>
+            <div class="col-12 col-lg-6 d-none d-lg-block">
+                <img src="/images/profile_pictures/<%= json.character_name_slug %>.webp" class="w-75 rounded-circle" alt="<%- json.character_name %>" title="<%- json.character_name %>"></div>
+
+            <div class="col-3 d-none d-lg-block"></div>
+        </div>
+
+
+        <h2><%= json.character_nicknames %></h2>
+        <h3><%= language.characters.xp %>: <%= json.character_xp %></h3>
+        <div class="text-start  ">
+            <h4><%- language.characters.birthday %></h4>
+            <p><%- json.character_birthday_date %></p>
+            <h4><%- language.characters.species %></h4>
+            <p><%- json.character_species %></p>
+            <h4><%- language.characters.sex %></h4>
+            <p><%- json.character_gender %></p>
+            <h4><%- language.characters.sexuality %></h4>
+            <p><%- json.character_sex %></p>
+            <h4><%- language.characters.weapons %></h4>
+            <% json.character_weapons.forEach(function(element) { %>
+                <h5><%= element.weapon_name %></h5>
+                <p><%- element.weapon_description %></p>
+            <% }); %>
+            <h4><%- language.characters.abilities %></h4>
+            <% json.character_abilities.forEach(function(element) { %>
+                <h5><%= element.ability_name %></h5>
+                <p><%- element.ability_description %></p>
+            <% }); %>
+            <h4><%- language.characters.story %></h4>
+            <p><%- json.character_story %></p>
+            <h4><%- language.characters.interests %></h4>
+            <p><%- json.character_interests %></p>
+
+
+        </div>
+
+    </div>
+    <div class="col-12 col-lg-3 text-center px-4 pt-3 bg-dark text-light bg-opacity-75">
+        <h4><%- language.characters.relationsips %></h4>
+        <% json.character_relationships.forEach(function(element) { %>
+            <h5><a href="/characters/<%= element.partner_slug %>"><%= element.partner_name %></a>
+                - <%= element.relationship_status !== 'custom' ? element.relationship_status : element.custom %></h5>
+        <% }); %>
+        <h4 class="pt-4"><%- language.characters.properties %></h4>
+        <div class="row ">
+            <% json.character_properties.forEach(function(element) { %>
+            <div class="col-12 col-lg-6 text-center pt-3">
+                <img style="object-fit: cover;" src="/images/properties/<%= element.property_id %>.webp"
+                     alt="<%= element.property_name %>" title="<%= element.property_name %>"
+                     class="w-75 ratio ratio-1x1">
+                <h5><%= element.property_name %></h5>
+            </div>
+            <% }); %>
+        </div>
+
+    </div>
+    <div class="col-2 d-none d-lg-block"></div>
+
+</div>
+</div>
+</body>
+</html>
