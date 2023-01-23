@@ -3,7 +3,7 @@
 function changeCharacter(slug){
 
     $.ajax({
-        url: '/my-characters',
+        url: '/characters/mine',
         method: 'POST',
         data: {"character":slug},
         success: function(){

@@ -1,16 +1,17 @@
-
-div.cke_editor_weapon_description{
+div[class^='cke_editor_weapon_description'], div[class*='cke_editor_weapon_description'] {
   display: none;
 }
 
-div.cke_editor_weapon_description:first-of-type{
+div[class^='cke_editor_weapon_description']:first-of-type, div[class*='cke_editor_weapon_description']:first-of-type {
   display: block;
 }
 
-div.cke_editor_ability_description{
+div[class^='cke_editor_ability_description'], div[class*='cke_editor_ability_description'] {
   display: none;
 }
 
-div.cke_editor_ability_description:first-of-type{
+div[class^='cke_editor_ability_description']:first-of-type, div[class*='cke_editor_ability_description']:first-of-type {
   display: block;
 }
+
+/*# sourceMappingURL=new_character.css.map */

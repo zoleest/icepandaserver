@@ -5,22 +5,8 @@ router.get('/', function (req, res) {
 
     req.session.destroy();
 
-    res.writeHead(302, {
-        'Location': '/'
-    });
-    res.end();
+    res.status(201).json({success: true});
 
-
-});
-
-router.post('/', function (req, res) {
-
-    req.session.destroy();
-
-    res.writeHead(302, {
-        'Location': '/'
-    });
-    res.end();
 
 });
 

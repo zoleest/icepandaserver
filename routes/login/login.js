@@ -18,135 +18,80 @@ function monthDiff(d1, d2) {
     return months <= 0 ? 0 : months;
 }
 
-
-router.get('/', function (req, res) {
-
-
-    //checks the session if user is logged if not, renders login form, else redirects to index page
-    if (req.session.loggedIn === undefined) {
-        res.render('login/login_form',
-            {
-                "config": config,
-                "language": language,
-                "titlePartial": language.login.title,
-                "urlPartial": '/login',
-                'error': null
-            });
-    } else {
-        res.writeHead(302, {
-            'Location': '/'
-        });
-        res.end();
-    }
-
-});
+const MongoClient = new Mongo.MongoClient(config.mongoUrl, {useNewUrlParser: true});
 
 router.post('/', async function (req, res) {
 
-    //If not loggedin, process, else redirect
-    if (req.session.loggedIn === undefined) {
+    try {
         //check username before process
         let usernameRegex = /^[a-zA-Z0-9]{3,32}$/;
         let username = sanitize(req.body.username.toLowerCase());
         let password = sanitize(req.body.password);
         let error = false;
 
-        if (usernameRegex.test(username)) {
+        if (!usernameRegex.test(username)) throw language.login.loginUsernamePasswordError;
 
-            //connect to mongodb collection
-            const MongoClient = new Mongo.MongoClient(config.mongoUrl, {useNewUrlParser: true});
-            MongoClient.connect();
-            const MongoDBCollection = {
-                "users": MongoClient.db(config.databaseName).collection(config.databaseName + "Users"),
-                "characters": MongoClient.db(config.databaseName).collection(config.databaseName + "Characters")
+        //connect to mongodb collection
+
+        MongoClient.connect();
+        const MongoDBCollection = {
+            "users": MongoClient.db(config.databaseName).collection(config.databaseName + "Users"),
+            "characters": MongoClient.db(config.databaseName).collection(config.databaseName + "Characters")
+        };
+
+
+        //Checks for the username, and get the password for validation
+        let loginData = await MongoDBCollection.users.findOne({
+            "username": username,
+            registrationHash: {$exists: false}
+        }, {projection: {"password": 1, "permissions": 1, "characters": 1, "registrationDate": 1, "level": 1}});
+
+        if (loginData === null) throw language.login.loginUsernamePasswordError;
+
+        let isPasswordCorrect = await bcrypt.compare(password, loginData.password);
+
+        if (!isPasswordCorrect) throw language.login.loginUsernamePasswordError;
+        //Creating the session. characters ordered.
+        req.session.loggedIn = true;
+        req.session.userName = username;
+        req.session.userPermissions = loginData.permissions;
+        let characters = await MongoDBCollection.characters.find({
+            "character_user_username": req.session.userName,
+            "character_isactive": 1
+        }, {projection: {"character_name": 1, "character_name_slug": 1}}).toArray();
+        req.session.userCharacters = characters;
+        req.session.level = loginData.level;
+        let now = new Date();
+        let registerDate = new Date(Date.parse(loginData.registrationDate));
+        //+1 so player can start game with new character
+        req.session.userMonthSinceRegistration = monthDiff(registerDate, now);
+
+        //set the first character active
+
+        if (characters.length !== 0) {
+            req.session.activeCharacter = {
+                "slug": characters[0].character_name_slug,
+                "name": characters[0].character_name
             };
-
-            try {
-                    await  MongoDBCollection.users.findOne({}) // duplicate key error
-            } catch (error) {
-                if (error) {
-                    console.log(`Error worth logging: ${error}`); // special case for some reason
-                }
-                throw error; // still want to crash
-            }
-
-            //Checks for the username, and get the password for validation
-            let loginData = await MongoDBCollection.users.findOne({
-                "username": username,
-                registrationHash: {$exists: false}
-            }, {projection: {"password": 1, "permissions": 1, "characters": 1, "registrationDate": 1, "level": 1}});
-
-            if (loginData !== null) {
-                let isPasswordCorrect = await bcrypt.compare(password, loginData.password);
-                if (isPasswordCorrect) {
-                    //Creating the session. characters ordered.
-                    req.session.loggedIn = true;
-                    req.session.userName = username;
-                    req.session.userPermissions = loginData.permissions;
-                    let characters = await MongoDBCollection.characters.find({
-                        "character_user_username": req.session.userName,
-                        "character_isactive": 1
-                    }, {projection: {"character_name": 1, "character_name_slug": 1}}).toArray();
-                    req.session.userCharacters = characters;
-                    req.session.level = loginData.level;
-                    let now = new Date();
-                    let registerDate = new Date(Date.parse(loginData.registrationDate));
-                    //+1 so player can start game with new character
-                    req.session.userMonthSinceRegistration = monthDiff(registerDate, now);
-
-                    //set the first character active
-
-                    if (characters.length !== 0) {
-                        req.session.activeCharacter = {
-                            "slug": characters[0].character_name_slug,
-                            "name": characters[0].character_name
-                        };
-                    }
-
-                    /*
-                    res.render('login/login_success_character_choice');*/
-
-                    res.writeHead(302, {
-                        'Location': '/'
-                    });
-                    res.end();
-
-                } else {
-
-                    error = true;
-
-                }
-            } else {
-                error = true;
-
-            }
-
-
-        } else {
-            error = true;
         }
 
-        //If there is error display the - this time - only error
 
-        if (error) {
-            res.render('login/login_form',
-                {
-                    "config": config,
-                    "language": language,
-                    "titlePartial": language.login.title,
-                    "urlPartial": '/login',
-                    'error': language.login.loginUsernamePasswordError
-                });
-        }
-
-    } else {
-
-        res.writeHead(302, {
-            'Location': '/'
+        res.status(201).json({
+            loggedIn: true,
+            activeCharacter: req.session.activeCharacter,
+            charactersData: req.session.userCharacters
         });
-        res.end();
 
+
+//If there is error display the - this time - only error
+    } catch (error) {
+        if (error) {
+            res.status(201).json({error: error});
+        }
+    }finally{
+        MongoClient.close()
     }
+
 
 });
 

@@ -108,7 +108,7 @@ $(document).ready(function () {
     //LOADING CHARACTERS
 
     $.ajax({
-        url: '/my-characters',
+        url: '/characters/mine',
         success: function (response) {
             drawCharacterChanger(response);
         }

@@ -9,36 +9,6 @@ const fs = require('fs');
 const sharp = require('sharp');
 
 
-router.get('/', function (req, res) {
-
-
-    //checks if logged in or not. If not redirect to index
-    if (req.session.loggedIn !== undefined) {
-
-
-        //get id from query's slug
-        let slug = sanitize(req.query.id);
-        //if session contains slug or admin, then render, else redirect to index
-
-        if ((req.session.userCharacters.includes(slug) && slug === req.session.actualCharacter) || req.session.userPermissions.includes('administrator')) {
-
-            res.render("my_characters/edit_character_form", {"character": slug});
-        } else {
-            res.writeHead(302, {
-                'Location': '/'
-            });
-            res.end();
-        }
-
-    } else {
-        res.writeHead(302, {
-            'Location': '/'
-        });
-        res.end();
-    }
-
-});
-
 router.post('/', function (req, res) {
 
     //if logged in, continue, else redirect to index
@@ -176,10 +146,16 @@ router.post('/', function (req, res) {
 
     } else {
 
-        res.writeHead(302, {
-            'Location': '/'
+        res.render("characters/edit_character_form", {
+            "config": config,
+            "language": language,
+            "titlePartial": language.characters.newCharacter,
+            "permissions": req.session.userPermissions,
+            "level": req.session.level,
+            "urlPartial": '/characters/new',
+            "CKEPosition": 'comment',
+            "errorText": error
         });
-        res.end();
 
     }
 

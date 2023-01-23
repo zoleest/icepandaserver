@@ -7,7 +7,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const MongoStore = require('connect-mongo');
 const CronJob = require('cron').CronJob;
-
+const cors = require('cors')
 
 //require configuration
 const config = require('./config');
@@ -22,8 +22,6 @@ const loginRouter = require('./routes/login/login');
 const lostPasswordRouter = require('./routes/login/lost_password');
 const logoutRouter = require('./routes/login/logout');
 //My characters controls
-const myCharactersRouter = require('./routes/my_characters/my_characters');
-const newCharacterRouter = require('./routes/my_characters/new_character');
 const deactivateCharacterRouter = require('./routes/my_characters/deactivate_characters');
 const imageProcessorRouter = require('./routes/image_processor/image_processor');
 const editCharacterRouter = require('./routes/my_characters/edit_character');
@@ -64,6 +62,12 @@ app.use(requestSession = session({
     cookie: {maxAge: 1000 * 60 * 60 * 24 * config.maxSessionDays}
 }));
 
+
+app.use(cors({
+    credentials: true,
+    origin: ['http://localhost:3001']
+}))
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 1000000}));
@@ -84,8 +88,6 @@ app.use('/login', loginRouter);
 app.use('/lost-password', lostPasswordRouter);
 app.use('/logout', logoutRouter);
 //My characters controls
-app.use('/my-characters', myCharactersRouter);
-app.use('/my-characters/new', newCharacterRouter);
 app.use('/my-characters/deactivate', deactivateCharacterRouter);
 app.use('/my-characters/edit', editCharacterRouter);
 //CKE image processor
