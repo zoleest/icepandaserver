@@ -29,7 +29,7 @@ router.post('/', async function (req, res) {
         let password = sanitize(req.body.password);
         let error = false;
 
-        if (!usernameRegex.test(username)) throw language.login.loginUsernamePasswordError;
+        if (!usernameRegex.test(username)) throw "loginUsernamePasswordError";
 
         //connect to mongodb collection
 
@@ -46,11 +46,11 @@ router.post('/', async function (req, res) {
             registrationHash: {$exists: false}
         }, {projection: {"password": 1, "permissions": 1, "characters": 1, "registrationDate": 1, "level": 1}});
 
-        if (loginData === null) throw language.login.loginUsernamePasswordError;
+        if (loginData === null) throw "loginUsernamePasswordError";
 
         let isPasswordCorrect = await bcrypt.compare(password, loginData.password);
 
-        if (!isPasswordCorrect) throw language.login.loginUsernamePasswordError;
+        if (!isPasswordCorrect) throw "loginUsernamePasswordError";
         //Creating the session. characters ordered.
         req.session.loggedIn = true;
         req.session.userName = username;

@@ -31,7 +31,7 @@ router.get('/:id/profile', async function (req, res) {
 
             let characterById = await MongoDBCollections.characters.findOne({"character_name_slug": slug});
 
-            if (characterById === null) throw "Character not exist"
+            if (characterById === null) throw "character_not_exist"
 
             let properties = await MongoDBCollections.properties.find({"property_id": {"$in": characterById.character_properties}}).toArray();
 
@@ -40,29 +40,11 @@ router.get('/:id/profile', async function (req, res) {
             if (characterById !== null) {
                 characterById.character_properties = properties;
 
-
-                res.render("characters/single_character", {
-                    "json": characterById,
-                    "config": config,
-                    "language": language,
-                    "isLoggedIn": req.session.loggedIn,
-                    "characters": req.session.userCharacters,
-                    "activeCharacter": req.session.activeCharacter,
-                    "permissions": req.session.userPermissions,
-                    "level": req.session.level,
-                    "titlePartial": characterById.character_name,
-                    "urlPartial": '/character/' + slug
-
-                });
+                res.status(201).json({character: characterById});
             }
         } catch (error) {
             console.log(error);
-
-            res.writeHead(302, {
-                'Location': '/characters'
-            });
-            res.end();
-
+            res.status(400).json({error: error});
 
         } finally {
             await MongoClient.close();
@@ -83,11 +65,11 @@ router.get('/list', async function (req, res) {
             }
         }).sort({"character_name": 1}).limit(config.locationsPageLimit).toArray();
 
-        res.status(201).json(charactersMenuJson);
+      res.status(201).json(charactersMenuJson);
 
     } catch (error) {
         console.log(error);
-        res.status(201).json({error: error});
+        res.status(400).json({error: error});
     } finally {
         await MongoClient.close();
     }
@@ -137,7 +119,7 @@ router.get('/mine/list', async function (req, res) {
 
             console.log(error);
 
-            res.status(201).json({error: error});
+            res.status(400).json({error: error});
 
         } finally {
 
