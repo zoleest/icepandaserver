@@ -36,7 +36,8 @@ router.post('/', async function (req, res) {
         MongoClient.connect();
         const MongoDBCollection = {
             "users": MongoClient.db(config.databaseName).collection(config.databaseName + "Users"),
-            "characters": MongoClient.db(config.databaseName).collection(config.databaseName + "Characters")
+            "characters": MongoClient.db(config.databaseName).collection(config.databaseName + "Characters"),
+            "locations": MongoClient.db(config.databaseName).collection(config.databaseName + "Locations")
         };
 
 
@@ -66,34 +67,67 @@ router.post('/', async function (req, res) {
         //+1 so player can start game with new character
         req.session.userMonthSinceRegistration = monthDiff(registerDate, now);
 
+
         //set the first character active
 
         if (characters.length !== 0) {
             req.session.activeCharacter = {
-                "slug": characters[0].character_name_slug,
-                "name": characters[0].character_name
+                "character_name_slug": characters[0].character_name_slug,
+                "character_name": characters[0].character_name
             };
         }
+
+        let userHavePrivateLocations = false;
+        let privateLocations;
+        let redirectTo;
+
+        if (req.session.userPermissions.includes('administrator') || req.session.userPermissions.includes('moderator') || req.session.userPermissions.includes('watcher')) {
+            userHavePrivateLocations = true;
+        } else {
+
+            if(req.session.activeCharacter!== undefined){
+                privateLocations = await MongoDBCollection.locations.find({
+                    "location_restricted_to": req.session.activeCharacter.character_name_slug
+                }, {projection: {"character_name": 1, "character_name_slug": 1}}).toArray();
+
+                if (privateLocations!== undefined) {
+                    userHavePrivateLocations = true;
+                }
+            }else{
+                redirectTo = "new_character";
+
+            }
+
+
+
+        }
+
+
 
 
         res.status(201).json({
             loggedIn: true,
             activeCharacter: req.session.activeCharacter,
-            charactersData: req.session.userCharacters
+            charactersData: req.session.userCharacters,
+            privateLocations: userHavePrivateLocations,
+            redirectTo: redirectTo
         });
 
 
 //If there is error display the - this time - only error
-    } catch (error) {
+    } catch
+        (error) {
+        console.log(error);
         if (error) {
-            res.status(201).json({error: error});
+            res.status(400).json({error: error});
         }
-    }finally{
+    } finally {
         MongoClient.close()
     }
 
 
-});
+})
+;
 
 module.exports = router;
 

@@ -9,7 +9,7 @@ const MongoClient = new Mongo.MongoClient(config.mongoUrl, {useNewUrlParser: tru
 
 
 /* GET single game. */
-router.get('/:pagetype/:tag/:id', async function (req, res, next) {
+router.get('/:tag/:id', async function (req, res, next) {
 
     /*Empty session variables declare if not exist*/
     req.session.activeCharacter = req.session.activeCharacter!==undefined?req.session.activeCharacter:{
@@ -264,7 +264,7 @@ router.get('/:pagetype/:tag/:id', async function (req, res, next) {
 
 
 /* Get location list*/
-router.get('/:pagetype/:tag', async function (req, res, next) {
+router.get('/:tag/list/:id/', async function (req, res, next) {
 
 
     //get the type of the game to list
@@ -273,15 +273,11 @@ router.get('/:pagetype/:tag', async function (req, res, next) {
     let restrictedTo = req.session.activeCharacter !== undefined ? req.session.activeCharacter.slug : "";
 
     //get page number
-    let pageNumber = (req.query.pg !== undefined && !isNaN(req.pg)) ? sanitize(req.query.pg) : 1;
+    let pageNumber = (req.params!== undefined && !isNaN(req.params.pg)) ? sanitize(req.params.pg) : 1;
 
-    //get the page type from url
 
-    let pagetype = req.params.pagetype;
 
-    if (pagetype === 'page' || pagetype === "locations") {
-
-        //if tag's value is not assigned, then tag value become public
+   //if tag's value is not assigned, then tag value become public
         if (tag === undefined) {
             tag = "public";
         }
@@ -293,14 +289,13 @@ router.get('/:pagetype/:tag', async function (req, res, next) {
 
         }
 
-        if (pagetype === 'locations') {
+
 
             try {
 
                 await MongoClient.connect();
                 const MongoDBCollection = {
-                    "locations": MongoClient.db(config.databaseName).collection(config.databaseName + "Locations"),
-                    "comments": MongoClient.db(config.databaseName).collection(config.databaseName + "Comments")
+                    "locations": MongoClient.db(config.databaseName).collection(config.databaseName + "Locations")
                 };
 
                 // get the n-th page of game
@@ -318,39 +313,17 @@ router.get('/:pagetype/:tag', async function (req, res, next) {
 
                 }
 
-                res.render('game/locations',
-                    {
-                        "locationData": locationsMenuJson,
-                        "config": config,
-                        "language": language,
-                        "isLoggedIn": req.session.loggedIn,
-                        "characters": req.session.userCharacters,
-                        "activeCharacter": req.session.activeCharacter,
-                        "permissions": req.session.userPermissions,
-                        "level": req.session.level,
-                        "titlePartial": language.locations.locations,
-                        "urlPartial": '/game/locations/' + tag
-                    });
+                res.status(201).json(locationsMenuJson);
+
+
 
             } catch (error) {
                 console.log(error);
+                res.status(400).json({error:error})
             } finally {
                 await MongoClient.close();
 
             }
-        } else {
-            res.writeHead(302, {
-                'Location': '/'
-            });
-            res.end();
-        }
-
-    } else {
-        res.writeHead(302, {
-            'Location': '/'
-        });
-        res.end();
-    }
 
 
 });

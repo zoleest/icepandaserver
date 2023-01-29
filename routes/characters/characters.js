@@ -26,7 +26,8 @@ router.get('/:id/profile', async function (req, res) {
             const MongoDBCollections =
                 {
                     characters: MongoClient.db(config.databaseName).collection(config.databaseName + "Characters"),
-                    properties: MongoClient.db(config.databaseName).collection(config.databaseName + "Properties")
+                    properties: MongoClient.db(config.databaseName).collection(config.databaseName + "Properties"),
+                    characterFields: MongoClient.db(config.databaseName).collection(config.databaseName + "CharacterFields")
                 };
 
             let characterById = await MongoDBCollections.characters.findOne({"character_name_slug": slug});
@@ -35,13 +36,17 @@ router.get('/:id/profile', async function (req, res) {
 
             let properties = await MongoDBCollections.properties.find({"property_id": {"$in": characterById.character_properties}}).toArray();
 
+            let characterFields = await MongoDBCollections.characterFields.find().toArray();
+
+
+            // if (characterFields === null) ;
 
             //if there are existing document, then render, else render all
-            if (characterById !== null) {
-                characterById.character_properties = properties;
+            characterById.character_properties = properties;
 
-                res.status(201).json({character: characterById});
-            }
+
+            res.status(201).json({character: characterById, fields: characterFields});
+
         } catch (error) {
             console.log(error);
             res.status(400).json({error: error});
@@ -52,83 +57,6 @@ router.get('/:id/profile', async function (req, res) {
 
     }
 });
-
-router.get('/list', async function (req, res) {
-
-    try {
-        MongoClient.connect();
-        const MongoDBCollection = MongoClient.db(config.databaseName).collection(config.databaseName + "Characters");
-        let charactersMenuJson = await MongoDBCollection.find({}, {
-            projection: {
-                'character_name_slug': 1,
-                'character_name': 1
-            }
-        }).sort({"character_name": 1}).limit(config.locationsPageLimit).toArray();
-
-      res.status(201).json(charactersMenuJson);
-
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({error: error});
-    } finally {
-        await MongoClient.close();
-    }
-
-});
-
-router.get('/mine/list', async function (req, res) {
-
-
-
-    //checks if user is logged in, or transfer to index page
-
-
-    try {
-
-        if (req.session.loggedIn === undefined) throw "listing_error"
-
-            MongoClient.connect();
-            const MongoDBCollection = MongoClient.db(config.databaseName).collection(config.databaseName + "Characters");
-
-
-            let characters = await MongoDBCollection.find({
-                "character_user_username": req.session.userName,
-                "character_isactive": 1
-            }, {projection: {"character_name": 1, "character_name_slug": 1}}).toArray();
-
-            if (characters.length === 0)   throw "go_to_new_character_error"
-                //sorting the documents, and sending json
-
-                let jsonArray = [];
-                characters.sort().forEach(function (value, key) {
-                    let characterJson = {
-                        "character_name_slug": value.character_name_slug,
-                        "character_name": value.character_name
-                    };
-                    jsonArray.push(characterJson);
-
-                    if (key + 1 === characters.length) {
-
-                        res.json({list: req.session.userCharacters, activeCharacter: req.session.activeCharacter});
-
-
-                    }
-                });
-
-        } catch (error) {
-
-            console.log(error);
-
-            res.status(400).json({error: error});
-
-        } finally {
-
-            MongoClient.close();
-        }
-
-
-});
-
 
 router.post('/mine', async function (req, res) {
 
@@ -176,86 +104,86 @@ router.post('/mine', async function (req, res) {
 
 });
 
-router.get('/new', async function (req, res) {
+router.get('/list', async function (req, res) {
 
     try {
-        if (req.session.loggedIn === undefined) throw "User not logged in"
+        MongoClient.connect();
+        const MongoDBCollection = MongoClient.db(config.databaseName).collection(config.databaseName + "Characters");
+        let charactersMenuJson = await MongoDBCollection.find({}, {
+            projection: {
+                'character_name_slug': 1,
+                'character_name': 1
+            }
+        }).sort({"character_name": 1}).limit(config.locationsPageLimit).toArray();
 
-        //if allowed is more than used, or user is admin, then render the form
-
-        if (!((req.session.level > req.session.userCharacters.length) || req.session.userPermissions.includes('administrator') || req.session.userPermissions.includes('moderator'))) throw "User has no permission to the new character form"
-
-        res.render("characters/edit_character_form", {
-            "config": config,
-            "language": language,
-            "titlePartial": language.characters.newCharacter,
-            "permissions": req.session.userPermissions,
-            "level": req.session.level,
-            "urlPartial": '/characters/new',
-            "CKEPosition": 'comment',
-            "errorText": undefined,
-            "oldProfile": undefined
-        });
+        res.status(201).json(charactersMenuJson);
 
     } catch (error) {
         console.log(error);
-
-        res.writeHead(302, {
-            'Location': '/'
-        });
-        res.end();
-
+        res.status(400).json({error: error});
+    } finally {
+        await MongoClient.close();
     }
-
 
 });
 
-router.get('/:id/edit', async function (req, res) {
+
+router.get(['/new', "/:id/edit"], async function (req, res) {
 
     try {
-        if (req.session.loggedIn === undefined) throw "User not logged in";
+        if (req.session.loggedIn === undefined) throw "user_not_logged_in"
 
         //get id from query's slug
         let slug = req.params.id !== undefined ? sanitize(req.params.id) : "";
         //if session contains slug or admin, then render, else redirect to index
 
-        if (!((req.session.userCharacters.includes(slug) && slug === req.session.actualCharacter) || req.session.userPermissions.includes('administrator'))) throw "User not have the permission to edit"
+        if(req.path === "/new"){
+            if (!((req.session.level + req.session.userMonthSinceRegistration > req.session.userCharacters.length) || req.session.userPermissions.includes('administrator') || req.session.userPermissions.includes('moderator'))) throw "user_no_permission_to_new_character"
+
+        }else{
+            if (!((req.session.userCharacters.includes(slug) && slug === req.session.actualCharacter) || req.session.userPermissions.includes('administrator'))) throw "user_no_permission_to_edit"
+
+        }
+
+        let MongoCollection = {
+            characterFields: MongoClient.db(config.databaseName).collection(config.databaseName + "CharacterFields"),
+            characters: MongoClient.db(config.databaseName).collection(config.databaseName + "Characters")
+        };
+
+        MongoClient.connect();
+
+        let character = await MongoCollection.characters.findOne({'character_name_slug': slug});
+
+        let profileFields = await MongoCollection.characterFields.find().toArray();
+
+        if(character !== null){
+        for(let profileFieldsIteral = 0; profileFieldsIteral < profileFields.length; profileFieldsIteral++){
+
+               profileFields[profileFieldsIteral]['previousValue'] = character[profileFields[profileFieldsIteral].fieldName];
 
 
-        await MongoClient.connect();
-        const MongoDBCollection = MongoClient.db(config.databaseName).collection(config.databaseName + "Characters");
 
-        let character = await MongoDBCollection.findOne({'character_name_slug':slug});
+        }}
 
-        res.render("characters/edit_character_form", {
-            "config": config,
-            "language": language,
-            "titlePartial": language.characters.newCharacter,
-            "permissions": req.session.userPermissions,
-            "level": req.session.level,
-            "urlPartial": '/characters/new',
-            "CKEPosition": 'comment',
-            "errorText": undefined,
-            "oldProfile": character
-        });
+        res.status(201).json({fields: profileFields, slug: slug});
 
     } catch (error) {
         console.log(error);
 
-        res.writeHead(302, {
-            'Location': '/'
-        });
-        res.end();
+        res.status(400).json({"error": error});
+
     } finally {
-        await MongoClient.close();
+        MongoClient.close();
     }
 
 
 });
 
+
+
 router.post(['/new', '/:id/edit'], async function (req, res) {
 
-    let sexualityArray = ['Heteroszexuális', "Homoszexuális", "Biszexuális", "Aszexuális", "Egyéb"];
+    let sexualityArray = ['heterosexual', "homosexual", "bisexual", "asexual", "other"];
 
     await MongoClient.connect();
     const MongoDBCollections = {
@@ -265,61 +193,68 @@ router.post(['/new', '/:id/edit'], async function (req, res) {
 
     try {
         //if logged in, continue, else redirect to index
-        if (req.session.loggedIn === undefined) throw "User not logged in"
+        if (req.session.loggedIn === undefined) throw "user_not_logged_in"
 
-        //if allowed is more than used, or user is admin, then render the form
-        if (!((req.session.level + req.session.userMonthSinceRegistration > req.session.userCharacters.length) || req.session.userPermissions.includes('administrator') || req.session.userPermissions.includes('moderator'))) throw "User has no permission to submit new character"
+        if(req.path === "/new"){
+            if (!((req.session.level + req.session.userMonthSinceRegistration > req.session.userCharacters.length) || req.session.userPermissions.includes('administrator') || req.session.userPermissions.includes('moderator'))) throw "user_no_permission_to_new_character"
+
+        }else{
+            if (!((req.session.userCharacters.includes(slug) && slug === req.session.actualCharacter) || req.session.userPermissions.includes('administrator'))) throw "user_no_permission_to_edit"
+
+        }
 
         // Get variables from POST data
-        let name = sanitize(req.body.name);
-        let nickname = sanitize(req.body.nickname);
+        let name = req.body.Json.name!==undefined?sanitize(req.body.Json.name):req.session.activeCharacter.character_name;
+        let nicknames = sanitize(req.body.Json.nicknames);
 
-        if (!(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test((req.body.birthday)))) throw language.characters.birthday_error;
-        let birthday = sanitize(req.body.birthday);
+        let isValidDate = Date.parse(req.body.Json.birthday);
+        if (isNaN(isValidDate)) throw "birtday_error"
+        let birthday = sanitize(req.body.Json.birthday);
 
-        let species = sanitize(req.body.species);
+        let species = sanitize(req.body.Json.species);
 
-        if (!sexualityArray.includes(sanitize(req.body.sexuality))) throw language.characters.sexuality_error;
-        let sexuality = sanitize(req.body.sexuality);
+        if (!sexualityArray.includes(sanitize(req.body.Json.sexuality))) throw "sexuality_error";
+        let sexuality = sanitize(req.body.Json.sexuality);
 
-        if (!((req.body.sex === 'Férfi' || req.body.sex === 'Nő'))) throw language.characters.sex_error;
-        let sex = sanitize(req.body.sex);
+        if (!((req.body.Json.sex === 'male' || req.body.Json.sex === 'female'))) throw "sex_error";
+        let sex = sanitize(req.body.Json.sex);
 
         let weapons = [];
         let abilities = [];
 
-        let story = sanitize(req.body.story);
-        let interests = sanitize(req.body.interests);
+        let story = sanitize(req.body.Json.story);
+        let interests = sanitize(req.body.Json.interests);
 
-        let profile_picture = sanitize(req.body.profile_picture);
+        let profile_picture = sanitize(req.body.Json.profile_picture);
+        if (profile_picture===undefined||!profile_picture.startsWith('data:image/jpeg;base64')) throw "profile_picture_error"
 
         let slug = name.replace(' ', '_').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         let xp = config.defaultCharacterXP;
 
 
-        req.body.weapon_name.forEach(function (value, index) {
-            if (req.body.weapon_name[index] !== undefined && req.body.weapon_name[index] !== '' && req.body.weapon_description[index] !== undefined && req.body.weapon_description[index] !== '') {
+        for (let weaponsIteral = 0; weaponsIteral < config.maxWeaponAndAbility; weaponsIteral++) {
+            if (req.body.Json['weapon_name_' + weaponsIteral] !== undefined && req.body.Json['weapon_name_' + weaponsIteral] !== '' && req.body.Json['weapon_description_' + weaponsIteral] !== undefined && req.body.Json['weapon_description_' + weaponsIteral] !== '') {
                 weapons.push({
-                    "weapon_name": sanitize(req.body.weapon_name[index]),
-                    "weapon_description": sanitize(req.body.weapon_description[index])
+                    "weapon_name": sanitize(req.body.Json['weapon_name_' + weaponsIteral]),
+                    "weapon_description": sanitize(req.body.Json['weapon_description_' + weaponsIteral])
                 });
             }
-        });
+        }
 
-        req.body.ability_name.forEach(function (value, index) {
-            if (req.body.ability_name[index] !== undefined && req.body.ability_name[index] !== '' && req.body.ability_description[index] !== undefined && req.body.ability_description[index] !== '') {
+        for (let abilitiesIteral = 0; abilitiesIteral < config.maxabilityAndAbility; abilitiesIteral++) {
+            if (req.body.Json['ability_name_' + abilitiesIteral] !== undefined && req.body.Json['ability_name_' + abilitiesIteral] !== '' && req.body.Json['ability_description_' + abilitiesIteral] !== undefined && req.body.Json['ability_description_' + abilitiesIteral] !== '') {
                 abilities.push({
-                    "ability_name": sanitize(req.body.ability_name[index]),
-                    "ability_description": sanitize(req.body.ability_description[index])
-                })
+                    "ability_name": sanitize(req.body.Json['ability' + abilitiesIteral]),
+                    "ability_description": sanitize(req.body.Json['ability_description' + abilitesIteral])
+                });
             }
-        });
+        }
 
 
         //Check for existing user
         let existingCharacterByName = await MongoDBCollections.characters.findOne({"character_name": name}, {projection: {"character_id": 1}});
 
-        if (existingCharacterByName !== null && req.params.id === undefined) throw language.characters.existingCharacter_error;
+        if (existingCharacterByName !== null && req.params.id === undefined) throw "existing_character";
 
         //Query for the highest character ID
 
@@ -328,10 +263,13 @@ router.post(['/new', '/:id/edit'], async function (req, res) {
             maxIdFromDatabase = await MongoDBCollections.characters.find({}, {projection: {"character_id": 1}}).sort({"character_id": -1}).limit(1).toArray();
 
         }
+
+
         //naming the received file for profile and avatar
 
         let filename = name.toLowerCase().replace(" ", "_") + ".webp";
         //getting the image data by splitting
+
         let parts = profile_picture.split(';');
         let mimType = parts[0].split(':')[1];
         let imageData = parts[1].split(',')[1];
@@ -391,7 +329,7 @@ router.post(['/new', '/:id/edit'], async function (req, res) {
             let inserted = await MongoDBCollections.characters.insertOne({
                 "character_id": maxIdFromDatabase[0].character_id + 1,
                 "character_name": name,
-                "character_nicknames": nickname,
+                "character_nicknames": nicknames,
                 "character_birthday_date": birthday,
                 "character_species": species,
                 "character_sexuality": sexuality,
@@ -412,75 +350,43 @@ router.post(['/new', '/:id/edit'], async function (req, res) {
 
             if (inserted !== null) {
 
-                MongoDBCollections.users.updateOne({"username": req.session.userName}, {$push: {"characters": slug}});
+                MongoDBCollections.users.updateOne({"username": req.session.userName}, {$push: {"characters": slug}}).then(() => {
+                    MongoClient.close();
+                });
 
                 req.session.userCharacters.push({"character_name": name, "character_name_slug": slug});
                 req.session.activeCharacter = {"name": name, "slug": slug};
 
-
+                res.status(201).json({redirectTo: slug});
             }
 
         } else {
 
             let inserted = await MongoDBCollections.characters.updateOne({"character_name_slug": slug}, {
                 $set: {
-                    "character_name": name,
-                    "character_nicknames": nickname,
+                    "character_nicknames": nicknames,
                     "character_birthday_date": birthday,
                     "character_species": species,
                     "character_sexuality": sexuality,
                     "character_sex": sex,
                     "character_weapons": weapons,
                     "character_abilities": abilities,
-                    "character_relationships": [],
-                    "character_properties": [],
                     "character_story": story,
                     "character_interests": interests
                 }
+            }).then(() => {
+                MongoClient.close();
             });
 
+            res.status(201).json({redirectTo: slug});
         }
-
-
-
-
-        res.writeHead(302, {
-            'Location': '/characters/' + slug + '/profile'
-        });
-        res.end();
-
 
     } catch
         (error) {
+
         console.log(error);
+        res.status(400).json({error: error})
 
-
-        if (req.session.loggedIn !== undefined) {
-
-            res.render("characters/edit_character_form", {
-                "config": config,
-                "language": language,
-                "titlePartial": language.characters.newCharacter,
-                "permissions": req.session.userPermissions,
-                "level": req.session.level,
-                "urlPartial": '/characters/new',
-                "CKEPosition": 'comment',
-                "errorText": error,
-                "oldProfile": undefined
-            });
-
-        } else {
-
-            res.writeHead(302, {
-                'Location': '/'
-            });
-            res.end();
-
-        }
-
-
-    } finally {
-        await MongoClient.close();
     }
 
 });

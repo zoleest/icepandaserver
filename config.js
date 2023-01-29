@@ -62,9 +62,10 @@ const config = {
     //Mailer adress and password
     "siteMail": "zoltan.halapi95@gmail.com",
     "siteMailPassword": "nhqgxklcrbqgwtlw",
-    "siteMailFrom": "halapi.david@szerepjatek.net"
+    "siteMailFrom": "halapi.david@szerepjatek.net",
 
-
+    //Maximum number of acceptable weapons and abilities
+    "maxWeaponAndAbility": 6
 }
 
 module.exports = config;
